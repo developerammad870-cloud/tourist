@@ -20,7 +20,549 @@
 }
 
 body {
-  background: var(--background);
+  margin: 0;
+  background: rgb(212, 244, 250);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Sidebar container — fixed width and pinned to the left edge */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 170px;
+  height: 100vh;
+  background: rgb(255, 247, 223);
+  border-right: 2px solid rgb(51, 17, 17);
+  /* The boundary line */
+  padding: 16px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  /* Nothing spills out to the right */
+  overflow-y: auto;
+  transition: width 0.3s;
+}
+
+/* Collapsed state — shrink to just the toggle button */
+.sidebar-closed {
+  width: 70px;
+  padding: 8px;
+}
+
+/* 1. Remove padding, cursor, and hover from the 'li' container */
+.sidebar ul li {
+  font-size: 18px;
+  list-style: none;
+  /* Keeps bullets removed */
+  margin: 2px 0;
+  /* Adds space between your buttons */
+}
+
+/* 2. Put the button styling directly on the 'a' tag so the whole area is clickable */
+.sidebar a {
+  color: #fa8c16;
+  text-decoration: none;
+  display: block;
+  /* IMPORTANT: Forces the link to take up the full width */
+  width: 100%;
+  /* Ensures it fills the list item */
+  padding: 10px 10px;
+  /* Moved from 'li' to 'a' */
+  cursor: pointer;
+  /* Moved from 'li' to 'a' */
+  border-radius: 8px;
+  /* Moved from 'li' to 'a' */
+  transition: 0.3s;
+  box-sizing: border-box;
+  /* Prevents padding from breaking the width */
+}
+
+/* 3. Apply the hover effect directly to the link */
+.sidebar a:hover {
+  background-color: #282726;
+}
+
+.sidebar h2 {
+  color: brown;
+  font-weight: bold;
+  font-size: 40px;
+}
+
+
+/* Collapse button (left arrow) */
+.collapse-btn {
+  background: none;
+  border: none;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+}
+
+/* Flip the arrow to the right when the sidebar is closed */
+.sidebar-closed .collapse-btn svg {
+  transform: rotate(150deg);
+  transition: transform 0.3s;
+}
+
+/* Hamburger */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.hamburger span {
+  display: block;
+  width: 26px;
+  height: 3px;
+  background-color: white;
+  border-radius: 2px;
+}
+
+/* Main content */
+.main-content {
+  flex: 1;
+  margin-left: 170px;
+  /* matches the OPEN sidebar width */
+  padding: 32px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  transition: margin-left 0.3s;
+
+  /* center whatever is inside, in either state */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Sidebar closed → main fills the page */
+.main-full {
+  margin-left: 70px;
+  /* matches the CLOSED sidebar width */
+}
+
+/* Keep the page content from stretching edge-to-edge so it reads centered */
+.main-content>* {
+
+  width: 100%;
+  max-width: 800px;
+}
+
+.hotel-page h1 {
+  text-align: center;
+  font-weight: bold;
+  font-size: 40px;
+  color: rgb(255, 247, 223);
+  -webkit-text-stroke: .7px rgb(0, 0, 0);
+}
+
+.hotel-page h2 {
+
+  color: #1275ff;
+}
+
+.hotel-page img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.hotel-images {
+  
+  margin: 20px 0;
+  column-gap: 20px;
+  row-gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 100%;
+  height: 300px;
+}
+
+.hotel-images img {
+  border-radius: 25px;
+  width: 100%;
+  height: 210px;
+}
+
+/* For bookings page */
+.bookings-page h1 {
+  text-align: center;
+  font-weight: bold;
+  font-size: 40px;
+  color: rgb(255, 247, 223);
+  -webkit-text-stroke: .7px rgb(0, 0, 0);
+}
+
+/* For places page */
+.places-page h1 {
+  padding-top: 20px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 40px;
+  color: rgb(250, 243, 221);
+  -webkit-text-stroke: .7px rgb(0, 0, 0);
+}
+
+.places-page h2 {
+  font-weight: bold;
+  font-size: 20px;
+  color: #922408;
+  margin-bottom: 10px;
+}
+
+.places-page h3 {
+  padding: 20px 0;
+  font-weight: bold;
+  font-size: 20px;
+  color: #922408;
+  margin-bottom: 10px;
+}
+
+.places-images {
+  border-bottom: 2px solid #a16244; 
+  padding-bottom: 20px;           
+  margin-bottom: 20px;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.places-images img {
+
+  width: 100%;
+  height: 200px;
+}
+
+.places-images1 {
+ border-bottom: 2px solid #a16244; 
+  padding-bottom: 20px;           
+  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.places-images1 img {
+
+  width: 100%;
+  height: 200px;
+}
+
+.places-page h4  {
+  padding: 20px 0;
+  font-weight: bold;
+  font-size: 20px;
+  color: #922408;
+  margin-bottom: 10px;
+}
+
+.places-images2 {
+  border-bottom: 2px solid #a16244; 
+  padding-bottom: 20px;           
+  margin-bottom: 20px;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.places-images2 img {
+
+  width: 100%;
+  height: 200px;
+}
+
+.places-page h5  {
+  padding: 20px 0;
+  font-weight: bold;
+  font-size: 20px;
+  color: #922408;
+  margin-bottom: 10px;
+}
+
+.places-images3 {
+  border-bottom: 2px solid #a16244; 
+  padding-bottom: 20px;           
+  margin-bottom: 20px;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.places-images3 img {
+
+  width: 100%;
+  height: 200px;
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 28px auto;
+  background: #fd8585;
+  padding: 36px;
+  border-radius: var(--radius);
+  box-shadow: 0 8px 30px rgba(18, 18, 18, 0.04);
+}
+
+.container h2 {
+  margin: 0 0 18px;
+  font-size: 2.4rem;
+  text-align: center;
+}
+
+.container h3 {
+  color: var(--muted);
+  font-size: 1.05rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.container label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+  margin-bottom: 20px;
+  
+}
+
+.container input {
+    margin-bottom: 20px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.container button {
+    justify-self: start;
+    background: var(--gold);
+    color: var(--suite-bg);
+    background: rgb(212, 244, 250);
+    color: var(--jade-dark);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.container button:hover {
+  background-color: #fa8c16;
+}
+
+/* ================= Users page ================= */
+
+ .users-page {
+  padding: 2rem;
+}
+
+.users-page > h1 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem;
+}
+
+.users-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .users-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .users-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ================= User card ================= */
+
+.user-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  transition: box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.user-card:hover {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.user-card h2 {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.user-card p {
+  margin: 0;
+}
+
+.user-card a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.user-card a:hover {
+  text-decoration: underline;
+}
+
+/* ---- username ---- */
+.user-card .username {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #6b7280;
+  margin-bottom: 0.75rem;
+}
+
+/* ---- contact block ---- */
+.user-card .contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  align-items: flex-start;
+}
+
+.user-card .contact p:nth-of-type(2) {
+  color: #4b5563;
+}
+
+/* ---- address block ---- */
+.user-card .address {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #4b5563;
+}
+
+/* ---- company block ---- */
+.user-card .company {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.user-card .company p:first-child {
+  font-weight: 500;
+}
+
+.user-card .company p:last-child {
+  color: #6c7382;
+  font-style: italic;
+}
+
+/* ================= Form ================= */
+
+.user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 640px;
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+.user-form h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.form-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.form-row > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-form input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  width: 100%;
+}
+
+.user-form input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 0.15);
+}
+
+.user-form button {
+  align-self: flex-start;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 0.375rem;
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.875rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.user-form button:hover {
+  background: #1d4ed8;
+}
+
+/* ================= Delete ================= */
+
+.delete-btn {
+  margin-top: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid #fca5a5;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: #dc2626;
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background: #fef2f2;
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    flex-direction: column;
+  }
+}
+
+.form-actions,
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}  
