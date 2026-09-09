@@ -1,0 +1,14 @@
+{
+  "name": "tourist-realtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "WebSocket service: pushes new enquiries to the CMS and applies booking status changes.",
+  "scripts": {
+    "dev": "node --env-file=../cms/.env.local server.mjs",
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "mongodb": "^7.5.0"
+  }
+}

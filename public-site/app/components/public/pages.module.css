@@ -1,0 +1,664 @@
+/* ------------------------------------------------------------------ */
+/* Layout and components for the public pages (destinations, stays,     */
+/* about, contact, trip detail). The navbar/footer live in              */
+/* public.module.css; the admin screens keep using ui.module.css.       */
+/* ------------------------------------------------------------------ */
+
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.narrow {
+  max-width: 760px;
+}
+
+/* ---------- page header ---------- */
+
+.pageHead {
+  padding: 64px 0 36px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: #7a8ba1;
+}
+
+.h1 {
+  margin: 0 0 14px;
+  font-size: clamp(30px, 5vw, 46px);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: #0d1a2b;
+  font-weight: 700;
+}
+
+.h2 {
+  margin: 0 0 16px;
+  font-size: clamp(21px, 3vw, 27px);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: #0d1a2b;
+  font-weight: 700;
+}
+
+.lede {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 17px;
+  line-height: 1.65;
+  color: #55677d;
+}
+
+.section {
+  padding: 28px 0;
+}
+
+/* ---------- trip cards ---------- */
+
+.tripGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  padding-bottom: 20px;
+}
+
+.tripCard {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid rgba(13, 26, 43, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.tripCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(13, 26, 43, 0.16);
+  box-shadow: 0 14px 34px rgba(13, 26, 43, 0.11);
+}
+
+.tripMedia {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: #dce6f0;
+  overflow: hidden;
+}
+
+.tripMedia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.45s ease;
+}
+
+.tripCard:hover .tripMedia img {
+  transform: scale(1.045);
+}
+
+.tripTag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(13, 26, 43, 0.82);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+
+.tripBody {
+  padding: 18px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  flex: 1;
+}
+
+.tripTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.tripName {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #0d1a2b;
+  letter-spacing: -0.01em;
+}
+
+.tripRegion {
+  font-size: 13px;
+  color: #7a8ba1;
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #b7791f;
+  flex-shrink: 0;
+}
+
+.tripTagline {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #55677d;
+  flex: 1;
+}
+
+.tripFoot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 12px;
+  border-top: 1px solid rgba(13, 26, 43, 0.07);
+}
+
+.tripCta {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0d1a2b;
+}
+
+/* ---------- chips ---------- */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.chip {
+  background: rgba(13, 26, 43, 0.055);
+  color: #3b4d63;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+/* ---------- trip detail ---------- */
+
+.detailHero {
+  position: relative;
+  height: clamp(260px, 42vw, 440px);
+  overflow: hidden;
+  background: #0d1a2b;
+}
+
+.detailHero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.72;
+}
+
+.detailHeroCopy {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 40px 0;
+  background: linear-gradient(transparent, rgba(6, 14, 25, 0.86));
+  color: #fff;
+}
+
+.detailHeroCopy .h1 {
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.detailHeroCopy .eyebrow {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 44px;
+  padding: 44px 0 20px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .detailGrid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+.prose p {
+  font-size: 16px;
+  line-height: 1.75;
+  color: #45566b;
+  margin: 0 0 16px;
+}
+
+/* sticky so the price stays in view while the itinerary scrolls */
+.aside {
+  position: sticky;
+  top: 90px;
+  background: #fff;
+  border: 1px solid rgba(13, 26, 43, 0.09);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 6px 22px rgba(13, 26, 43, 0.06);
+}
+
+@media (max-width: 900px) {
+  .aside {
+    position: static;
+  }
+}
+
+.facts {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: rgba(13, 26, 43, 0.07);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.fact {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fff;
+  padding: 11px 13px;
+  font-size: 14px;
+}
+
+.factLabel {
+  color: #7a8ba1;
+}
+
+.factValue {
+  color: #0d1a2b;
+  font-weight: 600;
+  text-align: right;
+}
+
+.asideBtn {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+/* ---------- itinerary ---------- */
+
+.itinerary {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.itDay {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 18px;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(13, 26, 43, 0.07);
+}
+
+.itDay:last-child {
+  border-bottom: none;
+}
+
+.itNum {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #91a0b3;
+  padding-top: 3px;
+}
+
+.itTitle {
+  margin: 0 0 5px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0d1a2b;
+}
+
+.itDetail {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #55677d;
+}
+
+/* ---------- included / not included ---------- */
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+@media (max-width: 620px) {
+  .twoCol {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+}
+
+.checkList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.checkList li {
+  display: flex;
+  gap: 9px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #45566b;
+}
+
+.tick {
+  color: #16a34a;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+.cross {
+  color: #b0bac6;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+/* ---------- hotels ---------- */
+
+.hotelGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.hotelCard {
+  background: #fff;
+  border: 1px solid rgba(13, 26, 43, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.hotelMedia {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #dce6f0;
+}
+
+.hotelMedia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hotelBody {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.stars {
+  color: #e0a82e;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.hotelBlurb {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #55677d;
+  flex: 1;
+}
+
+.amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.amenity {
+  font-size: 12px;
+  color: #6b7c93;
+  background: rgba(13, 26, 43, 0.05);
+  padding: 4px 9px;
+  border-radius: 6px;
+}
+
+/* ---------- about ---------- */
+
+.valueGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 22px;
+}
+
+.valueCard {
+  background: #fff;
+  border: 1px solid rgba(13, 26, 43, 0.08);
+  border-radius: 14px;
+  padding: 22px;
+}
+
+.valueTitle {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0d1a2b;
+}
+
+.valueText {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #55677d;
+}
+
+/* ---------- contact ---------- */
+
+.contactGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 44px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .contactGrid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
+.infoCard {
+  background: #0d1a2b;
+  color: rgba(255, 255, 255, 0.72);
+  border-radius: 16px;
+  padding: 26px;
+}
+
+.infoCard h2 {
+  color: #fff;
+  font-size: 17px;
+  margin: 0 0 16px;
+}
+
+.infoList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.infoLabel {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 4px;
+}
+
+.infoValue {
+  font-size: 15px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.infoValue:hover {
+  text-decoration: underline;
+}
+
+/* ---------- misc ---------- */
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #55677d;
+  text-decoration: none;
+  margin-bottom: 6px;
+}
+
+.backLink:hover {
+  color: #0d1a2b;
+}
+
+/* Pine, matching the home page's CTA and the footer it sits directly above —
+   the old navy read as a third, unrelated dark against them. */
+.ctaBand {
+  background: linear-gradient(150deg, #0e5b55 0%, #0b423e 100%);
+  border-radius: 18px;
+  padding: 44px 32px;
+  text-align: center;
+  color: #fff;
+  margin: 48px 0 0;
+}
+
+.ctaBand h2 {
+  margin: 0 0 10px;
+  font-size: clamp(22px, 3.4vw, 30px);
+  letter-spacing: -0.02em;
+}
+
+.ctaBand p {
+  margin: 0 auto 22px;
+  max-width: 52ch;
+  color: rgba(255, 255, 255, 0.68);
+  line-height: 1.65;
+}
+
+.ctaActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btnLight {
+  background: #fff;
+  color: #0b423e;
+}
+
+.btnLight:hover {
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.btnOutline {
+  background: transparent;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.btnOutline:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ---------- what replaced the prices ---------- */
+
+/* The card's bottom-left slot on /destinations and /hotels. Same footprint as
+   the old price so the grid does not shift, but it carries the thing that
+   actually decides a trip: when to come, and what is included. */
+.tripWhen {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tripWhenLabel {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7a8ba1;
+}
+
+.tripWhenValue {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #0d1a2b;
+  /* Ranges like "April – October" must not wrap mid-dash on a narrow card. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Trip detail sidebar, above the facts list. */
+.asideLead {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0e5b55;
+}
+
+.asideNote {
+  margin: 0 0 20px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #55677d;
+}

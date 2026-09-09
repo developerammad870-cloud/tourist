@@ -1,0 +1,228 @@
+@import "tailwindcss";
+
+/*
+ * CMS shell: light caramel glassmorphism.
+ *
+ * Cream ground, warm white glass, caramel light. Two things change on a light
+ * theme and both are easy to get wrong:
+ *
+ *   1. Glass stops being "white at low alpha". On a dark ground a pale film
+ *      reads as a lit pane; on cream it reads as nothing at all. Here the panes
+ *      are near-white at *high* alpha and it is the border and the shadow that
+ *      separate them from the page.
+ *   2. Shadows have to be warm and soft. A neutral black shadow on cream looks
+ *      like dirt; these are brown at low opacity, which reads as sunlight.
+ *
+ * The tokens below are the whole palette — the app retints from this block
+ * alone, which is how it went from blue/violet, to caramel on espresso, to
+ * this, without touching a single component.
+ */
+
+:root {
+  /* ground */
+  --bg-0: #fbf6ee;
+  --bg-1: #f3e7d6;
+
+  /* light sources */
+  --caramel: #c07a35;
+  --toffee: #9a5f28;
+  --honey: #e0a45c;
+
+  /* glass */
+  --glass: rgba(255, 253, 249, 0.62);
+  --glass-strong: rgba(255, 253, 249, 0.82);
+  --glass-brd: rgba(122, 82, 42, 0.16);
+  --glass-brd-lit: rgba(192, 122, 53, 0.55);
+  /* The top edge catches the light, the way a real pane does. */
+  --glass-inner: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  /* ink */
+  --ink: #2b1c10;
+  --muted: #6f5741;
+  --faint: #9c866d;
+
+  --r-sm: 0.6rem;
+  --r-md: 0.9rem;
+  --r-lg: 1.25rem;
+
+  --shadow-panel: 0 1px 2px rgba(90, 58, 25, 0.06),
+    0 1.5rem 3rem -1.5rem rgba(90, 58, 25, 0.35);
+  --glow-caramel: 0 0 2.5rem -0.6rem rgba(192, 122, 53, 0.5);
+  --glow-toffee: 0 0 2.5rem -0.6rem rgba(154, 95, 40, 0.4);
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --background: var(--bg-0);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg-0);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Ambient light. Fixed rather than scrolled: these are lamps in the room, not
+ * marks on the page, so they stay put while content moves past them.
+ * `position: fixed` + a negative z-index keeps them behind everything without
+ * needing a wrapper element.
+ */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(50rem 34rem at 12% -6%, rgba(224, 164, 92, 0.34) 0%, rgba(224, 164, 92, 0) 66%),
+    radial-gradient(44rem 30rem at 88% 4%, rgba(232, 186, 150, 0.4) 0%, rgba(232, 186, 150, 0) 64%),
+    radial-gradient(56rem 40rem at 62% 96%, rgba(255, 214, 158, 0.32) 0%, rgba(255, 214, 158, 0) 68%),
+    linear-gradient(160deg, var(--bg-1) 0%, var(--bg-0) 58%);
+}
+
+:focus-visible {
+  outline: 2px solid var(--caramel);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------- sidebar --- */
+
+/* A glass rail rather than a solid slab: the ambient light behind the app
+   shows through it, which is what ties it to the pages it sits beside. */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 186px;
+  height: 100vh;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  backdrop-filter: blur(22px) saturate(140%);
+  border-right: 1px solid var(--glass-brd);
+  padding: 18px 12px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  transition: width 0.3s var(--ease);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  z-index: 20;
+}
+
+.sidebar-closed {
+  width: 74px;
+  padding: 10px 8px;
+}
+
+.sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar ul li {
+  font-size: 14px;
+  margin: 2px 0;
+}
+
+/* Styling sits on the 'a' so the whole row is clickable */
+.sidebar a {
+  position: relative;
+  color: var(--muted);
+  text-decoration: none;
+  display: block;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  font-weight: 500;
+  border: 1px solid transparent;
+  transition: background 0.22s var(--ease), color 0.22s var(--ease),
+    border-color 0.22s var(--ease), box-shadow 0.22s var(--ease);
+}
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--glass-brd);
+  color: var(--toffee);
+  box-shadow: var(--glow-caramel);
+}
+
+.sidebar h2.logo {
+  font-weight: 700;
+  font-size: 21px;
+  margin: 0 0 18px;
+  padding: 0 12px;
+  letter-spacing: 0.02em;
+  background: linear-gradient(100deg, var(--honey), var(--caramel) 45%, var(--toffee));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.collapse-btn {
+  background: var(--glass);
+  border: 1px solid var(--glass-brd);
+  color: var(--muted);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  border-radius: var(--r-sm);
+  transition: background 0.22s var(--ease), color 0.22s var(--ease);
+}
+
+.collapse-btn:hover {
+  background: var(--glass-strong);
+  color: #fff;
+}
+
+.sidebar-closed .collapse-btn svg {
+  transform: rotate(180deg);
+  transition: transform 0.3s var(--ease);
+}
+
+/* --------------------------------------------------------- main column --- */
+
+.main-content {
+  flex: 1;
+  margin-left: 186px;
+  padding: 32px;
+  min-height: 100vh;
+  transition: margin-left 0.3s var(--ease);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-full {
+  margin-left: 74px;
+}
+
+.main-content > * {
+  width: 100%;
+  max-width: 1180px;
+}
+
+/* The home page opts out of the column and the gutter so its hero can run
+   full-bleed. Scoped to `.home-page` only — every other page keeps the
+   constrained, padded column. */
+.main-content > .home-page {
+  max-width: none;
+  margin: -32px;
+  width: calc(100% + 64px);
+}

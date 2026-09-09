@@ -2,25 +2,20 @@
   "name": "tourist",
   "version": "0.1.0",
   "private": true,
+  "description": "Two independent Next.js apps sharing one MongoDB (the public website and the CMS), plus a small WebSocket service that pushes new enquiries to the CMS.",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "next": "16.2.10",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "dev": "concurrently --names \"public,cms,socket\" --prefix-colors \"cyan,magenta,yellow\" --kill-others \"npm:dev:public\" \"npm:dev:cms\" \"npm:dev:realtime\"",
+    "dev:public": "npm --prefix public-site run dev",
+    "dev:cms": "npm --prefix cms run dev",
+    "build": "npm --prefix public-site run build && npm --prefix cms run build",
+    "lint": "npm --prefix public-site run lint && npm --prefix cms run lint",
+    "install:all": "npm --prefix public-site install && npm --prefix cms install",
+    "db:make-admin": "npm --prefix public-site run db:make-admin --",
+    "db:set-password": "npm --prefix public-site run db:set-password --",
+    "db:migrate-passwords": "npm --prefix public-site run db:migrate-passwords",
+    "dev:realtime": "npm --prefix realtime run dev"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.10",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "concurrently": "^9.1.2"
   }
 }

@@ -1,0 +1,287 @@
+/*
+ * Live enquiry feed: a fixed stack in the top-right of the screens that hold a
+ * socket (Orders, Bookings, Users).
+ *
+ * At the top rather than the bottom because it is a status, not a notification
+ * tray: an operator glances up to check the connection, and down there it sat
+ * over the bottom of whatever they were reading.
+ */
+.wrap {
+  position: fixed;
+  right: 18px;
+  top: 16px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  /* The container must not eat clicks on the page behind it; the children
+     switch pointer events back on for themselves. */
+  pointer-events: none;
+}
+
+.note {
+  pointer-events: auto;
+  display: grid;
+  gap: 3px;
+  text-align: left;
+  width: min(22rem, calc(100vw - 36px));
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--glass-brd-lit);
+  background: rgba(255, 253, 249, 0.92);
+  backdrop-filter: blur(20px) saturate(150%);
+  box-shadow: var(--glass-inner), 0 1.5rem 3rem -1.5rem rgba(90, 58, 25, 0.32),
+    var(--glow-caramel);
+  cursor: pointer;
+  font: inherit;
+  animation: slideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Arrives from above now that the stack hangs from the top edge. */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.noteTitle {
+  font-size: 13px;
+  font-weight: 700;
+  background: linear-gradient(100deg, var(--toffee), var(--caramel));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.noteDetail {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.status {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: rgba(255, 253, 249, 0.92);
+  border: 1px solid var(--glass-brd);
+  color: var(--muted);
+  backdrop-filter: blur(14px);
+  /* First in the stack: the connection light sits above the notices it
+     explains, and stays put as they come and go. */
+  order: -1;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.live {
+  color: #14603c;
+  border-color: rgba(52, 160, 110, 0.4);
+  box-shadow: 0 0 1.5rem -0.5rem rgba(52, 160, 110, 0.6);
+}
+
+/* Only the live state pulses: a steady dot for a socket that is down would
+   read as "fine". */
+.live .dot {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.connecting {
+  color: #8a6216;
+}
+
+.down {
+  color: #a3342b;
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .note,
+  .live .dot {
+    animation: none;
+  }
+}
+
+/* ---------- order actions ---------- */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--glass-brd);
+}
+
+.action {
+  flex: 1 1 auto;
+  min-width: 96px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s, opacity 0.18s;
+}
+
+.action:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.confirm {
+  background: linear-gradient(135deg, #f0b46e 0%, #c4823d 55%, #a86a32 100%);
+  color: var(--ink);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 0.5rem 1.2rem -0.5rem rgba(160, 100, 44, 0.8);
+}
+
+.confirm:hover:not(:disabled) {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    0 0.9rem 1.8rem -0.6rem rgba(160, 100, 44, 0.85), var(--glow-toffee);
+}
+
+.cancel {
+  background: rgba(248, 113, 113, 0.08);
+  color: #a3342b;
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+.cancel:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.16);
+  box-shadow: 0 0 1.6rem -0.5rem rgba(248, 113, 113, 0.6);
+}
+
+.actionNote,
+.actionError {
+  flex: 1 0 100%;
+  font-size: 12px;
+}
+
+.actionNote {
+  color: var(--faint);
+}
+
+.actionError {
+  color: #a3342b;
+}
+
+/* ---------- corner mark ---------- */
+
+/*
+ * The order card header.
+ *
+ * .headRow wraps, and the name block was claiming the whole line, pushing the
+ * badge and mark down into the body of the card.
+ *
+ * `flex-basis: 0` is the part that fixes it, and it is not obvious why:
+ * a wrapping flex container decides where to break lines using each item's
+ * *content* size, before any shrinking is considered. With `flex-basis: auto`
+ * the name block asks for its full text width, the row decides that plus the
+ * badge does not fit, and it breaks — `min-width: 0` never gets a chance to
+ * help, because shrinking only happens within a line that has already been
+ * decided. Asking for zero and growing into what is left keeps all three
+ * together, and min-width: 0 then lets the text wrap inside.
+ */
+.headMain {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Status badge + mark, kept together at the top-right. */
+.headEnd {
+  display: flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  margin-left: auto;
+  flex: none;
+}
+
+.corner {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  padding: 0;
+  line-height: 0;
+}
+
+/* Clickable state: quiet until hovered, so a destructive action never looks
+   like the obvious thing to press. */
+.cornerBtn {
+  background: transparent;
+  border-color: var(--glass-brd);
+  color: var(--faint);
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s, opacity 0.18s;
+}
+
+.cornerBtn:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.14);
+  border-color: rgba(248, 113, 113, 0.45);
+  color: #a3342b;
+  box-shadow: 0 0 1.4rem -0.5rem rgba(248, 113, 113, 0.7);
+}
+
+.cornerBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Armed state: the second click deletes, so it stops looking like an icon and
+   starts looking like a warning. */
+.cornerArmed {
+  width: auto;
+  padding: 0 10px;
+  height: 26px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 1.6rem -0.4rem rgba(239, 68, 68, 0.85);
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  animation: pop 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cornerArmed {
+    animation: none;
+  }
+}

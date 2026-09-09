@@ -1,0 +1,855 @@
+/*
+ * Home page styling — "paper & pine": ivory ground, charcoal text, one deep
+ * teal accent, and real photographs doing the work that vector scenery and CSS
+ * 3D used to do.
+ *
+ * There is deliberately no 3D anywhere in this file: no `perspective`, no
+ * `preserve-3d`, no `translateZ`. Depth comes from the photographs themselves,
+ * from generous white space, and from a single soft shadow on the cards. Hover
+ * states lift and zoom rather than tilt.
+ *
+ * The only motion is a slow zoom on the hero photograph and the scroll reveal,
+ * both switched off under `prefers-reduced-motion`.
+ *
+ * Fluidity: no fixed pixel widths. Every size is a clamp() or a fraction and
+ * the grids are auto-fit with a min() floor, so the page reflows continuously
+ * from a 320px phone to an ultrawide desktop rather than stepping between
+ * breakpoints.
+ */
+
+.page {
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ground */
+  --paper: #faf8f5;
+  --surface: #ffffff;
+  --sand: #f1ece5;
+
+  /* ink */
+  --ink: #16191c;
+  --ink-soft: #3d474e;
+  --muted: #6b7780;
+  --line: rgba(22, 25, 28, 0.1);
+
+  /* one accent, used sparingly */
+  --accent: #0e5b55;
+  --accent-deep: #0b423e;
+  --accent-soft: #e9f1ef;
+
+  --gutter: clamp(1.15rem, 4vw, 4rem);
+  --shell: 82rem;
+
+  width: 100%;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* ---------------------------------------------------------------- hero --- */
+
+.hero {
+  position: relative;
+  display: grid;
+  align-items: end;
+  min-height: clamp(30rem, 84svh, 46rem);
+  overflow: hidden;
+  isolation: isolate;
+  /* Shows through until the photograph loads, and stays the backdrop if the
+     remote host ever drops it — the hero never renders as a white hole. */
+  background: linear-gradient(160deg, #1d3b44 0%, #16262c 60%, #0d1417 100%);
+}
+
+.heroMedia {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+/*
+ * Slideshow timing.
+ *
+ * Every slide runs the same keyframes over the WHOLE cycle and is offset by its
+ * own positive animation-delay, so the windows below are tuned to four slides:
+ * one quarter of the cycle each. Change the slide count in Hero.tsx and these
+ * percentages have to move with it (100 / slides).
+ *
+ * Two details that are easy to get wrong:
+ *
+ * 1. `opacity: 0` is on the element itself, not only in the keyframes. Until a
+ *    delayed animation starts, an element paints in its ordinary state — so
+ *    without this every slide would be stacked and visible from the first
+ *    frame, and you would only ever see the last one.
+ *
+ * 2. A slide does NOT fade out as the next fades in. It holds at full opacity
+ *    until the next slide (later in the DOM, so painted on top) has completely
+ *    covered it, and only then snaps to zero. Cross-dissolving both at once
+ *    would let the dark background bleed through the middle of every
+ *    transition — a visible dip in brightness four times a cycle.
+ */
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation-name: slideFade;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes slideFade {
+  0% {
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  29% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.heroMedia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  animation-name: slideZoom;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* The push runs across the slide's own quarter of the cycle and then holds;
+   the reset back to the starting scale happens at the loop boundary, while the
+   slide is still hidden underneath the one on top of it. */
+@keyframes slideZoom {
+  0% {
+    transform: scale(1.04);
+  }
+  29% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1.18);
+  }
+}
+
+/* Two scrims: a soft vertical one for overall legibility, and a stronger
+   corner wash under the copy itself. */
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(
+      to top,
+      rgba(10, 16, 18, 0.82) 0%,
+      rgba(10, 16, 18, 0.42) 38%,
+      rgba(10, 16, 18, 0.12) 70%,
+      rgba(10, 16, 18, 0.34) 100%
+    ),
+    radial-gradient(
+      70% 80% at 12% 96%,
+      rgba(8, 14, 16, 0.55) 0%,
+      rgba(8, 14, 16, 0) 72%
+    );
+}
+
+.heroInner {
+  width: min(var(--shell), 100%);
+  margin-inline: auto;
+  padding: clamp(7rem, 16vh, 11rem) var(--gutter) clamp(3rem, 8vh, 5rem);
+  color: #fff;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0 0 clamp(0.9rem, 2vw, 1.4rem);
+  font-size: clamp(0.62rem, 1vw, 0.72rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.eyebrow::before {
+  content: "";
+  width: clamp(1.5rem, 4vw, 2.75rem);
+  height: 1px;
+  background: currentColor;
+  opacity: 0.7;
+}
+
+.title {
+  margin: 0;
+  max-width: 16ch;
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  font-size: clamp(2.15rem, 6vw, 4.6rem);
+  line-height: 1.04;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-shadow: 0 0.1em 1.6rem rgba(6, 12, 14, 0.45);
+}
+
+.titleAccent {
+  display: block;
+  font-style: italic;
+  color: #f3ece1;
+}
+
+.lede {
+  margin: clamp(1rem, 2.4vw, 1.6rem) 0 0;
+  max-width: 46ch;
+  font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 1px 12px rgba(6, 12, 14, 0.5);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.6rem, 1.4vw, 0.9rem);
+  margin-top: clamp(1.6rem, 3.5vw, 2.5rem);
+}
+
+/* Photo credit, so the hero reads as a real place rather than as decoration. */
+.heroCredit {
+  position: absolute;
+  right: var(--gutter);
+  bottom: clamp(1rem, 3vh, 1.75rem);
+  margin: 0;
+  /* Grid rather than flow: every caption sits in the same cell, so they
+     crossfade in place instead of stacking up. */
+  display: grid;
+  justify-items: end;
+  font-size: clamp(0.62rem, 0.9vw, 0.72rem);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  text-shadow: 0 1px 8px rgba(6, 12, 14, 0.6);
+}
+
+.credit {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  opacity: 0;
+  /* Its own keyframes, not the slides': one caption has to be gone before the
+     next arrives, because text does not paint over text opaquely. */
+  animation-name: creditFade;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes creditFade {
+  0% {
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  21% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ------------------------------------------------------------- buttons --- */
+
+.btn {
+  --lift: 0px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: clamp(0.75rem, 1.4vw, 0.95rem) clamp(1.3rem, 2.6vw, 1.9rem);
+  border-radius: 0.6rem;
+  font-size: clamp(0.83rem, 1.1vw, 0.92rem);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transform: translateY(var(--lift));
+  transition: transform 0.25s var(--ease), background 0.25s var(--ease),
+    border-color 0.25s var(--ease), color 0.25s var(--ease),
+    box-shadow 0.25s var(--ease);
+}
+
+.btnPrimary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 0.5rem 1.2rem -0.6rem rgba(14, 91, 85, 0.6);
+}
+
+.btnPrimary:hover {
+  --lift: -2px;
+  background: var(--accent-deep);
+  box-shadow: 0 0.9rem 1.8rem -0.7rem rgba(14, 91, 85, 0.65);
+}
+
+/* On the photograph: glass rather than a second solid slab. */
+.btnGlass {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.btnGlass:hover {
+  --lift: -2px;
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.btnQuiet {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.btnQuiet:hover {
+  --lift: -2px;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btnLight {
+  background: #fff;
+  color: var(--accent-deep);
+}
+
+.btnLight:hover {
+  --lift: -2px;
+  background: #f2efe9;
+}
+
+.btnOutline {
+  background: transparent;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.btnOutline:hover {
+  --lift: -2px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* -------------------------------------------------------------- promise --- */
+
+/* Three plain statements directly under the hero. Replaces the scrolling
+   marquee: on a light page a moving strip is noise, and these say something. */
+.promise {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  width: min(var(--shell), 100%);
+  margin-inline: auto;
+  padding: clamp(2.25rem, 5vw, 3.5rem) var(--gutter);
+  border-bottom: 1px solid var(--line);
+}
+
+.promiseItem {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.promiseTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  color: var(--ink);
+}
+
+.promiseNum {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+}
+
+.promiseNote {
+  margin: 0;
+  font-size: clamp(0.85rem, 1.1vw, 0.94rem);
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: 34ch;
+}
+
+/* --------------------------------------------------------------- shell --- */
+
+.section {
+  width: min(var(--shell), 100%);
+  margin-inline: auto;
+  padding: clamp(3rem, 7.5vw, 6rem) var(--gutter);
+}
+
+.sectionHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  margin-bottom: clamp(1.75rem, 4vw, 3rem);
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0 0 0.85rem;
+  font-size: clamp(0.6rem, 1vw, 0.7rem);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.kicker::before {
+  content: "";
+  width: clamp(1.2rem, 3vw, 2rem);
+  height: 1px;
+  background: currentColor;
+  opacity: 0.75;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.sectionNote {
+  margin: clamp(0.7rem, 1.6vw, 1rem) 0 0;
+  color: var(--muted);
+  max-width: 48ch;
+  line-height: 1.75;
+  font-size: clamp(0.9rem, 1.15vw, 1rem);
+}
+
+/* --------------------------------------------------------------- cards --- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
+  gap: clamp(1.1rem, 2.4vw, 1.9rem);
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 1px 2px rgba(22, 25, 28, 0.04),
+    0 0.75rem 1.75rem -1rem rgba(22, 25, 28, 0.18);
+  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease),
+    border-color 0.35s var(--ease);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(14, 91, 85, 0.35);
+  box-shadow: 0 1px 2px rgba(22, 25, 28, 0.05),
+    0 1.5rem 2.75rem -1rem rgba(22, 25, 28, 0.22);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.cardMedia {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--sand);
+}
+
+.cardMedia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s var(--ease);
+}
+
+.card:hover .cardMedia img {
+  transform: scale(1.06);
+}
+
+.badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.32rem 0.7rem;
+  border-radius: 0.4rem;
+  font-size: clamp(0.62rem, 0.9vw, 0.7rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: clamp(1rem, 2vw, 1.35rem) clamp(1.05rem, 2vw, 1.4rem)
+    clamp(1.1rem, 2vw, 1.4rem);
+}
+
+.cardTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.cardName {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.1rem, 1.7vw, 1.3rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.cardRegion {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.cardTagline {
+  margin: 0.8rem 0 0;
+  font-size: clamp(0.85rem, 1.1vw, 0.9rem);
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+
+.cardFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: clamp(0.9rem, 1.8vw, 1.15rem);
+  border-top: 1px solid var(--line);
+}
+
+/* Sits where the price used to. Deliberately the same visual weight — the
+   card's bottom-left slot is the one people look at, so it has to hold
+   something worth reading rather than an apology for a missing number. */
+.when {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.whenLabel {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.whenValue {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.cardCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  transition: gap 0.25s var(--ease);
+}
+
+.card:hover .cardCta {
+  gap: 0.6rem;
+}
+
+/* ----------------------------------------------------------- about us --- */
+
+.about {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4.5rem);
+}
+
+.aboutText {
+  margin: clamp(0.9rem, 2vw, 1.4rem) 0 0;
+  color: var(--ink-soft);
+  line-height: 1.8;
+  font-size: clamp(0.92rem, 1.15vw, 1rem);
+  max-width: 52ch;
+}
+
+.aboutPoints {
+  list-style: none;
+  margin: clamp(1.4rem, 3vw, 2rem) 0 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(0.7rem, 1.6vw, 1rem);
+}
+
+.point {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  font-size: clamp(0.87rem, 1.1vw, 0.94rem);
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+
+.pointMark {
+  flex: none;
+  width: 1.5rem;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.65rem;
+  font-weight: 700;
+  margin-top: 0.1rem;
+}
+
+.point strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.signature {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin-top: clamp(1.4rem, 3vw, 2rem);
+  padding-top: clamp(1.1rem, 2.2vw, 1.6rem);
+  border-top: 1px solid var(--line);
+}
+
+.signatureName {
+  font-family: var(--font-display), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.1rem, 1.7vw, 1.35rem);
+  color: var(--ink);
+}
+
+.signatureRole {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Two photographs, the second stepped down and overlapping — an editorial
+   pairing rather than a 3D object. */
+.aboutFrames {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(0.7rem, 1.6vw, 1.1rem);
+  align-items: start;
+}
+
+.aboutFrame {
+  overflow: hidden;
+  border-radius: 0.8rem;
+  background: var(--sand);
+  box-shadow: 0 1rem 2.5rem -1.25rem rgba(22, 25, 28, 0.35);
+}
+
+.aboutFrame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.aboutFrameTall {
+  aspect-ratio: 3 / 4;
+}
+
+.aboutFrameShort {
+  aspect-ratio: 1 / 1;
+  margin-top: clamp(2rem, 6vw, 4rem);
+}
+
+/* --------------------------------------------------------------- stats --- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(10.5rem, 100%), 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  overflow: hidden;
+}
+
+.stat {
+  background: var(--surface);
+  padding: clamp(1.35rem, 3vw, 2rem) clamp(1rem, 2vw, 1.4rem);
+  text-align: center;
+}
+
+.statValue {
+  display: block;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.statLabel {
+  display: block;
+  margin-top: 0.6rem;
+  font-size: clamp(0.64rem, 1vw, 0.72rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ----------------------------------------------------------------- CTA --- */
+
+.cta {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  padding: clamp(2.25rem, 6vw, 4rem) clamp(1.4rem, 4vw, 3.5rem);
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(150deg, var(--accent) 0%, var(--accent-deep) 100%);
+}
+
+.ctaTitle {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.7rem, 4vw, 2.8rem);
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  line-height: 1.12;
+}
+
+.ctaNote {
+  margin: clamp(0.8rem, 2vw, 1.15rem) auto clamp(1.5rem, 3vw, 2.1rem);
+  max-width: 46ch;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: clamp(0.9rem, 1.15vw, 1rem);
+}
+
+.ctaActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.6rem, 1.4vw, 0.9rem);
+  justify-content: center;
+}
+
+/* ---------------------------------------------------------------- misc --- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+
+.revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* Reveal wrappers sit between the grid and the cards, so they have to stretch
+   or every card in a row would size to its own content. */
+.grid > .reveal {
+  display: flex;
+}
+
+.grid > .reveal > * {
+  width: 100%;
+}
+
+/* --------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Freeze on the first frame: no rotation, no zoom. The later slides and
+     their captions are simply not painted. */
+  .slide,
+  .heroMedia img,
+  .credit {
+    animation: none !important;
+  }
+
+  .heroMedia img {
+    transform: scale(1.02);
+  }
+
+  .slide:first-child,
+  .credit:first-child {
+    opacity: 1;
+  }
+
+  .card,
+  .card:hover,
+  .card:hover .cardMedia img {
+    transform: none;
+    transition: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

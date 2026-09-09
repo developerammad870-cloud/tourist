@@ -1,0 +1,1557 @@
+/*
+ * Home page: the dashboard hero and the cards beneath it.
+ *
+ * DEPTH. The hero is one CSS 3D space. `.hero` owns the `perspective`,
+ * `.stage` carries `preserve-3d`, and every pane sits at its own negative
+ * `translateZ` with a matching scale-up so it keeps its intended size:
+ *
+ *   apparent size = perspective / (perspective + depth)
+ *   so a pane at translateZ(-D) is scaled by (P + D) / P to compensate.
+ *
+ * Tilting the stage a few degrees toward the pointer then produces parallax for
+ * free and, more importantly, correctly: near panes sweep further than far ones
+ * because the geometry says so. Depth of field falls out of the same number —
+ * the further back a pane sits, the more it is blurred and the more it fades,
+ * which is what stops five sheets of glass reading as five flat rectangles.
+ *
+ * Inside a `preserve-3d` subtree the browser sorts by 3D position and IGNORES
+ * `z-index`; depth is the only ordering. And `.stage` must never take
+ * `overflow`, `filter`, `opacity < 1` or a blend mode — each of those collapses
+ * the subtree back to flat. The panes may use all of them: a flattened plane at
+ * a distance is exactly what a pane of glass is.
+ *
+ * GLASS. Every surface is the same recipe: a translucent fill, a hairline
+ * border, a bright inner top edge and a soft shadow. It only works because
+ * there is coloured light behind it — see `.aura` here and the ambient pools in
+ * globals.css, where the palette tokens live.
+ */
+
+.page {
+  width: 100%;
+  color: var(--ink);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  background: transparent;
+}
+
+/* ---------------------------------------------------------------- hero --- */
+
+.hero {
+  position: relative;
+  display: grid;
+  min-height: clamp(28rem, 76svh, 42rem);
+  overflow: hidden;
+  isolation: isolate;
+  /* The camera. Larger = gentler, more expensive-looking convergence. */
+  perspective: 1400px;
+  perspective-origin: 50% 45%;
+  background:
+    radial-gradient(80% 60% at 50% 118%, rgba(255, 214, 158, 0.55) 0%, rgba(255, 214, 158, 0) 70%),
+    linear-gradient(165deg, #fff8ee 0%, #f7ead8 55%, #f2ddc4 100%);
+  border-bottom: 1px solid var(--glass-brd);
+}
+
+/* Ambient colour for the glass to pick up. Blurred and slowly drifting, so no
+   two panes are ever tinted quite the same. */
+.aura {
+  position: absolute;
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.9;
+  /*
+   * No blur filter here. It used to carry `filter: blur(60px)`, which forced
+   * the whole hero-sized layer to be re-rasterised every time anything above it
+   * moved — one of the two things that had this page running at 6fps. Radial
+   * gradients are already perfectly soft; the filter was paying a great deal
+   * for a difference nobody could see.
+   */
+  background:
+    radial-gradient(30rem 22rem at 22% 28%, rgba(255, 196, 124, 0.55) 0%, rgba(255, 196, 124, 0) 72%),
+    radial-gradient(28rem 20rem at 74% 22%, rgba(246, 176, 168, 0.42) 0%, rgba(246, 176, 168, 0) 72%),
+    radial-gradient(32rem 22rem at 60% 82%, rgba(255, 226, 170, 0.5) 0%, rgba(255, 226, 170, 0) 74%);
+  animation: drift 26s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  to {
+    transform: translate3d(3%, -2%, 0) scale(1.08);
+  }
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(var(--my, 0) * -5deg))
+    rotateY(calc(var(--mx, 0) * 7deg))
+    translate3d(0, calc(var(--sy, 0) * 3rem), 0);
+  transition: transform 0.6s var(--ease);
+  will-change: transform;
+}
+
+/* ---------------------------------------------------------- the frames --- */
+
+/*
+ * Concentric frames receding behind the headline.
+ *
+ * Each is an inset of the hero expressed as a percentage, and each sits deeper
+ * than the one inside it. Two things follow from that, and both are the point:
+ *
+ *   - It is flexible by construction. Nothing here has a fixed size, so the
+ *     composition keeps its proportions from a narrow panel to an ultrawide
+ *     monitor without a single breakpoint.
+ *   - The depth does the work. Turning the stage a few degrees spreads the
+ *     frames apart — the nearest sweeps furthest, the deepest barely moves —
+ *     which is what an eye reads as space rather than as decoration.
+ *
+ * They are borders and nothing else: no fill, no blur, no blend. On a pale page
+ * a hairline that fades toward the bottom reads as architecture; a filled panel
+ * would read as an object, and an object behind a headline is competition.
+ */
+.frame {
+  position: absolute;
+  border-radius: clamp(1rem, 3vw, 2.5rem);
+  border: 1px solid rgba(154, 95, 40, var(--edge-alpha, 0.16));
+  transform: translateZ(var(--z)) scale(var(--k));
+  /* Fades out toward the floor so the frames sink into the page rather than
+     stopping in a hard line. */
+  mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 96%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset;
+}
+
+.frame1 {
+  inset: 6%;
+  --z: -160px;
+  --k: 1.114; /* (1400 + 160) / 1400 */
+  --edge-alpha: 0.22;
+}
+
+.frame2 {
+  inset: 14%;
+  --z: -420px;
+  --k: 1.3;
+  --edge-alpha: 0.17;
+}
+
+.frame3 {
+  inset: 23%;
+  --z: -700px;
+  --k: 1.5;
+  --edge-alpha: 0.12;
+}
+
+/* The deepest is barely there: at this distance a frame should be a suggestion
+   of one, not a line. */
+.frame4 {
+  inset: 33%;
+  --z: -1000px;
+  --k: 1.714;
+  --edge-alpha: 0.08;
+}
+
+/*
+ * A slow breath on each, so the depth is alive before anyone touches it.
+ * Individual transform properties again — `transform` above is spoken for by
+ * the depth, and these compose with it rather than replacing it.
+ */
+.frame1 {
+  animation: breathe 19s ease-in-out infinite alternate;
+}
+
+.frame2 {
+  animation: breathe 23s ease-in-out infinite alternate;
+}
+
+.frame3 {
+  animation: breathe 29s ease-in-out infinite alternate;
+}
+
+.frame4 {
+  animation: breathe 37s ease-in-out infinite alternate;
+}
+
+@keyframes breathe {
+  to {
+    translate: 0 -0.8rem 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frame {
+    animation: none !important;
+  }
+}
+
+/* A faint grid lying on the floor of the scene: one more depth cue, and the
+   thing that gives the space a sense of ground. */
+.gridPlane {
+  position: absolute;
+  inset: -30% -20% -40%;
+  transform: translate3d(0, calc(var(--sy, 0) * 40px), -1000px) scale(1.714)
+    rotateX(74deg);
+  background-image:
+    linear-gradient(rgba(160, 104, 46, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(160, 104, 46, 0.18) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+  mask-image: radial-gradient(60% 60% at 50% 40%, #000 0%, transparent 75%);
+  opacity: 0.5;
+}
+
+/* Magnetic particle field: a canvas, above the panes and below the copy. */
+.particles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------ hero copy --- */
+
+.heroCopy {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(4.5rem, 11vh, 7rem) clamp(1.25rem, 4vw, 3rem)
+    clamp(6rem, 14vh, 8.5rem);
+  transform-style: preserve-3d;
+  /* Turns with the same camera at about a third of the angle, which is what
+     makes the headline and the panes visibly separate as the pointer moves. */
+  transform: rotateX(calc(var(--my, 0) * -1.4deg))
+    rotateY(calc(var(--mx, 0) * 2deg))
+    translate3d(0, calc(var(--sy, 0) * 4rem), 0);
+  opacity: calc(1 - var(--sy, 0) * 1.2);
+  transition: transform 0.6s var(--ease);
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--honey);
+  margin: 0 0 1.25rem;
+  padding-left: 0.42em;
+  /* The copy stands off the mountains rather than lying on them: each block is
+     nearer the camera than the last, so the whole headline has thickness when
+     the stage turns. */
+  transform: translateZ(30px);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 4.6vw, 3.6rem);
+  line-height: 1.06;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  transform: translateZ(56px);
+  text-shadow: 0 0.12em 1.2rem rgba(255, 255, 255, 0.85);
+  /* Wide enough that "Discover Pakistan with us." stays on one line — at the
+     old 16ch it broke across three and ran down into the ridges. */
+  max-width: 26ch;
+}
+
+.titleAccent {
+  display: block;
+  margin-top: 0.14em;
+  background: linear-gradient(100deg, #b9701f 0%, #d4913c 50%, #a85a20 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Must clear the inherited shadow. With `color: transparent`, .title's
+     text-shadow paints a grey blur *through* the glyphs and dirties the
+     gradient — the text reads muddy brown instead of warm cream. */
+  text-shadow: none;
+}
+
+.lede {
+  margin: 1.5rem 0 0;
+  max-width: 44ch;
+  font-size: clamp(0.98rem, 1.5vw, 1.15rem);
+  line-height: 1.7;
+  color: var(--muted);
+  transform: translateZ(34px);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  justify-content: center;
+  margin-top: 2.4rem;
+  /* Nearest of all — buttons should feel like the thing closest to you. */
+  transform: translateZ(78px);
+}
+
+.btn {
+  --lift: 0px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.95rem 1.85rem;
+  border-radius: 999px;
+  font-size: 0.94rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  transform: translateY(var(--lift));
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease),
+    background 0.3s var(--ease);
+}
+
+.btnPrimary {
+  background: linear-gradient(135deg, #f0b46e 0%, #c4823d 55%, #a86a32 100%);
+  color: var(--ink);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0.7rem 1.6rem -0.5rem rgba(160, 100, 44, 0.8), var(--glow-toffee);
+}
+
+.btnPrimary:hover {
+  --lift: -3px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 1.2rem 2.4rem -0.6rem rgba(160, 100, 44, 0.85),
+    0 0 3.5rem -0.4rem rgba(168, 106, 50, 0.8);
+}
+
+.btnGhost {
+  background: var(--glass);
+  color: var(--ink);
+  border: 1px solid var(--glass-brd);
+  backdrop-filter: blur(14px);
+}
+
+.btnGhost:hover {
+  --lift: -3px;
+  background: var(--glass-strong);
+  border-color: var(--glass-brd-lit);
+  box-shadow: var(--glow-caramel);
+}
+
+.scrollCue {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(1rem, 3vh, 1.75rem);
+  z-index: 4;
+  translate: -50% 0;
+  width: 1.55rem;
+  height: 2.6rem;
+  border: 1.5px solid rgba(154, 95, 40, 0.45);
+  border-radius: 999px;
+  opacity: calc(1 - var(--sy, 0) * 2.4);
+}
+
+.scrollCue::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0.45rem;
+  width: 3px;
+  height: 0.5rem;
+  margin-left: -1.5px;
+  border-radius: 999px;
+  background: var(--honey);
+  box-shadow: 0 0 0.6rem rgba(242, 192, 120, 0.9);
+  animation: wheel 1.9s var(--ease) infinite;
+}
+
+@keyframes wheel {
+  0% { transform: translateY(0); opacity: 0; }
+  35% { opacity: 1; }
+  100% { transform: translateY(0.85rem); opacity: 0; }
+}
+
+/* --------------------------------------------------------------- shell --- */
+
+.section {
+  max-width: 78rem;
+  margin: 0 auto;
+  padding: clamp(3.5rem, 8vw, 6.5rem) clamp(1.25rem, 4vw, 3rem);
+}
+
+.sectionHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2.75rem;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: clamp(1.8rem, 3.4vw, 2.7rem);
+  letter-spacing: -0.03em;
+  font-weight: 600;
+  line-height: 1.12;
+  color: var(--ink);
+}
+
+.sectionNote {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  max-width: 46ch;
+  line-height: 1.65;
+}
+
+/* --------------------------------------------------------------- cards --- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+  gap: clamp(1.25rem, 2.5vw, 1.9rem);
+}
+
+/* Wrapper owns the perspective so each card tilts in its own 3D space. */
+.cardWrap {
+  perspective: 1000px;
+}
+
+.card {
+  position: relative;
+  display: block;
+  border-radius: var(--r-md);
+  /* No backdrop-filter: there are six of these in a grid and each one costs a
+     separate pass over the page behind it. A slightly stronger fill gives the
+     same read for none of the cost. */
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-brd);
+  text-decoration: none;
+  color: inherit;
+  /* NOTE: deliberately no `overflow: hidden` — any overflow other than
+     `visible` forces `preserve-3d` to flatten, which would kill the translateZ
+     depth on the badge and body below. Clipping happens on .cardScene. */
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+    translateZ(var(--pop, 0px));
+  box-shadow: var(--glass-inner), var(--shadow-panel);
+  transition: box-shadow 0.4s var(--ease), transform 0.4s var(--ease),
+    border-color 0.4s var(--ease), background 0.4s var(--ease);
+}
+
+.card:hover {
+  background: var(--glass-strong);
+  border-color: var(--glass-brd-lit);
+  box-shadow: var(--glass-inner), 0 1px 2px rgba(90, 58, 25, 0.16),
+    0 2.5rem 4rem -1.5rem rgba(90, 58, 25, 0.34), var(--glow-caramel);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--caramel);
+  outline-offset: 3px;
+}
+
+.cardScene {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--r-md) var(--r-md) 0 0;
+  /* Stays behind the photograph: it is what you see while the image loads, and
+     what remains if the remote host ever drops it, so a dead hotlink still
+     looks deliberate rather than broken. */
+  background:
+    radial-gradient(120% 120% at 20% 0%, var(--c1, #d9a05e) 0%, transparent 60%),
+    radial-gradient(100% 120% at 90% 100%, var(--c2, #a86a32) 0%, transparent 62%),
+    linear-gradient(160deg, rgba(255, 236, 210, 0.14), rgba(255, 236, 210, 0));
+  border-bottom: 1px solid var(--glass-brd);
+}
+
+.cardScene img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* Inner parallax: the photograph shifts against the card face as it tilts,
+     driven by the same two variables as the tilt itself. */
+  transform: scale(1.06)
+    translate(calc(var(--ry, 0deg) * 0.35), calc(var(--rx, 0deg) * -0.35));
+  transition: transform 0.45s var(--ease);
+}
+
+/*
+ * Grades the photograph into the card.
+ *
+ * Two jobs: it keeps a bright picture from fighting the caramel palette around
+ * it, and it darkens the bottom edge so the title below never sits against a
+ * blown-out sky.
+ */
+.sceneShade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(13, 9, 6, 0.1) 0%,
+      rgba(13, 9, 6, 0.05) 45%,
+      rgba(13, 9, 6, 0.72) 100%
+    ),
+    linear-gradient(to top right, rgba(168, 106, 50, 0.28), transparent 62%);
+}
+
+.glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--glare, 0);
+  background: radial-gradient(
+    34% 44% at var(--gx, 50%) var(--gy, 50%),
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.15) 44%,
+    rgba(255, 255, 255, 0) 72%
+  );
+  transition: opacity 0.35s var(--ease);
+  mix-blend-mode: soft-light;
+}
+
+.badge {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.38rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.71rem;
+  font-weight: 600;
+  color: #0d1520;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 10px rgba(13, 21, 32, 0.22);
+  transform: translateZ(40px);
+}
+
+.cardBody {
+  padding: 1.15rem 1.25rem 1.3rem;
+  transform: translateZ(20px);
+}
+
+.cardTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.cardName {
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.cardRegion {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.8rem;
+  color: var(--faint);
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #b4761a;
+  white-space: nowrap;
+}
+
+.cardTagline {
+  margin: 0.8rem 0 0;
+  font-size: 0.885rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.cardFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.1rem;
+  padding-top: 0.95rem;
+  border-top: 1px solid var(--edge);
+}
+
+.price {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.priceValue {
+  display: block;
+  font-size: 1.08rem;
+  font-weight: 650;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.cardCta {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--honey);
+}
+
+/* --------------------------------------------------------------- stats --- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(10.5rem, 100%), 1fr));
+  gap: 1px;
+  background: var(--glass-brd);
+  border: 1px solid var(--glass-brd);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  backdrop-filter: blur(18px) saturate(140%);
+}
+
+.stat {
+  background: rgba(255, 253, 249, 0.75);
+  padding: 1.7rem 1.5rem;
+  text-align: center;
+  transition: background 0.3s var(--ease);
+}
+
+.stat:hover {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.statValue {
+  display: block;
+  font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  background: linear-gradient(120deg, var(--ink) 0%, #8a5320 55%, var(--caramel) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.statLabel {
+  display: block;
+  margin-top: 0.55rem;
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+
+.revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/*
+ * Closing band. The gradient is the same blue → violet as the primary button,
+ * so the page has one accent rather than two, and the glow sits under the panel
+ * instead of around it — a halo on every side reads as blur, a pool underneath
+ * reads as something lit from within.
+ */
+/*
+ * Closing band. On a light page a translucent panel has nothing to separate it
+ * from the page, so this one is the accent itself: a solid caramel gradient
+ * with cream text, which also gives the eye somewhere to land at the bottom of
+ * a very pale screen.
+ */
+.cta {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  padding: clamp(2.75rem, 6vw, 4.25rem);
+  text-align: center;
+  color: #fff9f0;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background:
+    radial-gradient(80% 130% at 50% 0%, rgba(255, 214, 158, 0.5) 0%, rgba(255, 214, 158, 0) 62%),
+    linear-gradient(150deg, #d08a3c 0%, #a85f24 55%, #8a4a1a 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 1.5rem 3rem -1.25rem rgba(120, 70, 26, 0.55);
+}
+
+.cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    50% 60% at 78% 108%,
+    rgba(255, 226, 170, 0.35) 0%,
+    rgba(255, 226, 170, 0) 70%
+  );
+  pointer-events: none;
+}
+
+.ctaTitle {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: #fff9f0;
+  font-size: clamp(1.7rem, 3.8vw, 2.7rem);
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+
+.ctaNote {
+  position: relative;
+  z-index: 1;
+  margin: 1rem auto 2.15rem;
+  max-width: 42ch;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.ctaActions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  justify-content: center;
+}
+
+.footer {
+  padding: 2.25rem 1.5rem 3.25rem;
+  text-align: center;
+  color: var(--faint);
+  font-size: 0.84rem;
+}
+
+/* ------------------------------------------------------- living motion --- */
+
+/*
+ * The fourth dimension: time.
+ *
+ * The pointer parallax above only moves when someone touches it. These give the
+ * scene its own life, so it is moving before you arrive and keeps moving when
+ * you stop. The per-element cycles live with their elements (see .deck and
+ * .chip); this is the slow swing of the whole stage.
+ *
+ * All of it uses the INDIVIDUAL transform properties (`translate`, `rotate`,
+ * `scale`) rather than `transform`. That is the trick: `transform` is already
+ * spoken for by the depth and the pointer parallax, and animating it here would
+ * overwrite them. The individual properties compose with it instead — translate,
+ * then rotate, then scale, then transform — so the two systems layer without
+ * either knowing about the other.
+ *
+ * Every animation is transform-only and therefore compositor-only: no layout,
+ * no paint, no re-rasterising.
+ */
+
+.stage {
+  animation: sway 21s ease-in-out infinite alternate;
+}
+
+@keyframes sway {
+  from {
+    rotate: y -1.6deg;
+  }
+  to {
+    rotate: y 1.6deg;
+  }
+}
+
+/* The floor slides under everything, which is what gives the scene a sense of
+   travelling rather than merely wobbling. */
+.gridPlane {
+  animation: floorDrift 40s linear infinite;
+}
+
+@keyframes floorDrift {
+  to {
+    background-position: 0 8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .gridPlane,
+  .aura {
+    animation: none !important;
+  }
+}
+
+/* ----------------------------------------------------------- dashboard --- */
+
+.dashGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+  gap: clamp(0.8rem, 1.8vw, 1.15rem);
+  margin-bottom: clamp(1rem, 2.5vw, 1.6rem);
+}
+
+/*
+ * A stat tile. The coloured wash is applied per tone below as a gradient in the
+ * top-left corner rather than as a border or a full fill: it tints the glass
+ * the way a nearby light would, which keeps four tiles side by side reading as
+ * one material in four colours instead of four different components.
+ */
+.tile {
+  position: relative;
+  display: grid;
+  gap: 0.35rem;
+  padding: clamp(1.1rem, 2.4vw, 1.5rem);
+  border-radius: var(--r-md);
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-brd);
+  box-shadow: var(--glass-inner), var(--shadow-panel);
+  overflow: hidden;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease),
+    border-color 0.3s var(--ease);
+}
+
+.tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    120% 100% at 0% 0%,
+    var(--tone, rgba(217, 160, 94, 0.3)) 0%,
+    transparent 62%
+  );
+  pointer-events: none;
+}
+
+.tile:hover {
+  transform: translateY(-3px);
+  border-color: var(--glass-brd-lit);
+  box-shadow: var(--glass-inner), var(--shadow-panel),
+    0 0 2.5rem -0.6rem var(--tone, rgba(217, 160, 94, 0.5));
+}
+
+/* Deeper than they were on the dark theme: a 30%-alpha wash that read clearly
+   against near-black disappears into cream. Each still carries its own meaning
+   — caramel for volume, amber for waiting, green for settled, toffee for
+   people — but within one warm family. */
+.toneBlue {
+  --tone: rgba(192, 122, 53, 0.42);
+}
+
+.toneAmber {
+  --tone: rgba(214, 158, 46, 0.44);
+}
+
+.toneGreen {
+  --tone: rgba(52, 160, 110, 0.36);
+}
+
+.toneViolet {
+  --tone: rgba(154, 95, 40, 0.42);
+}
+
+.tileValue {
+  position: relative;
+  font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.tileLabel {
+  position: relative;
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- chart --- */
+
+.chartCard {
+  padding: clamp(1.25rem, 2.6vw, 1.75rem);
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px solid var(--glass-brd);
+  backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: var(--glass-inner), var(--shadow-panel);
+}
+
+.chartHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.chartTitle {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.chartNote {
+  margin: 0.35rem 0 0;
+  max-width: 46ch;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.chartTotal {
+  flex: none;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--toffee);
+  background: rgba(196, 130, 61, 0.16);
+  border: 1px solid rgba(196, 130, 61, 0.35);
+}
+
+/* Fixed height, fluid width: `preserveAspectRatio="none"` in the SVG lets the
+   line stretch horizontally without the dots turning into ellipses, because
+   they are drawn after the viewBox is mapped. */
+.chart {
+  display: block;
+  width: 100%;
+  height: clamp(9rem, 22vw, 13rem);
+  overflow: visible;
+}
+
+.chartPeak {
+  fill: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.chartEmpty {
+  margin: 0;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--faint);
+  font-size: 0.9rem;
+}
+
+/* --------------------------------------------------------- reduced motion */
+
+/* ------------------------------------------------------- living motion --- */
+
+/*
+ * The fourth dimension: time.
+ *
+ * Everything above reacts to the pointer, which means the scene is dead until
+ * someone touches it. These animations give it its own life — the panes breathe
+ * in depth, the stage swings slowly, the floor drifts — so it is moving before
+ * you arrive and keeps moving when you stop.
+ *
+ * All of it uses the INDIVIDUAL transform properties (`translate`, `rotate`,
+ * `scale`) rather than `transform`. That is the whole trick: `transform` is
+ * already spoken for by the depth and the pointer parallax, and animating it
+ * here would overwrite them. The individual properties compose with it instead
+ * — the browser applies translate, then rotate, then scale, then transform —
+ * so the two systems layer without either knowing about the other.
+ *
+ * Every animation is transform-only and therefore compositor-only: no layout,
+ * no paint, no re-rasterising. Durations are deliberately prime-ish and
+ * unequal, so the panes never fall into step and start to look mechanical.
+ */
+
+.stage {
+  animation: sway 21s ease-in-out infinite alternate;
+}
+
+@keyframes sway {
+  from {
+    rotate: y -1.6deg;
+  }
+  to {
+    rotate: y 1.6deg;
+  }
+}
+
+/* Depth breathing: each pane drifts toward and away from the camera. Because
+   this is translate on Z, it genuinely changes the parallax relationship with
+   its neighbours rather than just sliding about. */
+.paneA {
+  animation: floatA 13s ease-in-out infinite alternate;
+}
+
+.paneB {
+  animation: floatB 17s ease-in-out infinite alternate;
+}
+
+.paneC {
+  animation: floatC 11s ease-in-out infinite alternate;
+}
+
+.paneD {
+  animation: floatD 19s ease-in-out infinite alternate;
+}
+
+.paneE {
+  animation: floatE 23s ease-in-out infinite alternate;
+}
+
+@keyframes floatA {
+  to {
+    translate: 1.5rem -1.1rem 60px;
+    rotate: 2.5deg;
+  }
+}
+
+@keyframes floatB {
+  to {
+    translate: -1.2rem 1.4rem -70px;
+    rotate: -3deg;
+  }
+}
+
+@keyframes floatC {
+  to {
+    translate: 1.8rem 0.9rem 90px;
+    rotate: 1.8deg;
+  }
+}
+
+@keyframes floatD {
+  to {
+    translate: -1.6rem -1.3rem -50px;
+    rotate: -2.2deg;
+  }
+}
+
+@keyframes floatE {
+  to {
+    translate: 0.9rem 1.6rem 40px;
+    rotate: 1.2deg;
+  }
+}
+
+/* The floor slides under everything, which is what gives the scene a sense of
+   travelling rather than merely wobbling. */
+.gridPlane {
+  animation: floorDrift 40s linear infinite;
+}
+
+@keyframes floorDrift {
+  to {
+    background-position: 0 8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .pane,
+  .gridPlane,
+  .aura {
+    animation: none !important;
+  }
+}
+
+/* ----------------------------------------------------------- dashboard --- */
+
+.dashGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+  gap: clamp(0.8rem, 1.8vw, 1.15rem);
+  margin-bottom: clamp(1rem, 2.5vw, 1.6rem);
+}
+
+/*
+ * A stat tile. The coloured wash is applied per tone below as a gradient in the
+ * top-left corner rather than as a border or a full fill: it tints the glass
+ * the way a nearby light would, which keeps four tiles side by side reading as
+ * one material in four colours instead of four different components.
+ */
+.tile {
+  position: relative;
+  display: grid;
+  gap: 0.35rem;
+  padding: clamp(1.1rem, 2.4vw, 1.5rem);
+  border-radius: var(--r-md);
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-brd);
+  box-shadow: var(--glass-inner), var(--shadow-panel);
+  overflow: hidden;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease),
+    border-color 0.3s var(--ease);
+}
+
+.tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    120% 100% at 0% 0%,
+    var(--tone, rgba(217, 160, 94, 0.3)) 0%,
+    transparent 62%
+  );
+  pointer-events: none;
+}
+
+.tile:hover {
+  transform: translateY(-3px);
+  border-color: var(--glass-brd-lit);
+  box-shadow: var(--glass-inner), var(--shadow-panel),
+    0 0 2.5rem -0.6rem var(--tone, rgba(217, 160, 94, 0.5));
+}
+
+/* Deeper than they were on the dark theme: a 30%-alpha wash that read clearly
+   against near-black disappears into cream. Each still carries its own meaning
+   — caramel for volume, amber for waiting, green for settled, toffee for
+   people — but within one warm family. */
+.toneBlue {
+  --tone: rgba(192, 122, 53, 0.42);
+}
+
+.toneAmber {
+  --tone: rgba(214, 158, 46, 0.44);
+}
+
+.toneGreen {
+  --tone: rgba(52, 160, 110, 0.36);
+}
+
+.toneViolet {
+  --tone: rgba(154, 95, 40, 0.42);
+}
+
+.tileValue {
+  position: relative;
+  font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.tileLabel {
+  position: relative;
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- chart --- */
+
+.chartCard {
+  padding: clamp(1.25rem, 2.6vw, 1.75rem);
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px solid var(--glass-brd);
+  backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: var(--glass-inner), var(--shadow-panel);
+}
+
+.chartHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.chartTitle {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.chartNote {
+  margin: 0.35rem 0 0;
+  max-width: 46ch;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.chartTotal {
+  flex: none;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--toffee);
+  background: rgba(196, 130, 61, 0.16);
+  border: 1px solid rgba(196, 130, 61, 0.35);
+}
+
+/* Fixed height, fluid width: `preserveAspectRatio="none"` in the SVG lets the
+   line stretch horizontally without the dots turning into ellipses, because
+   they are drawn after the viewBox is mapped. */
+.chart {
+  display: block;
+  width: 100%;
+  height: clamp(9rem, 22vw, 13rem);
+  overflow: visible;
+}
+
+.chartPeak {
+  fill: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.chartEmpty {
+  margin: 0;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--faint);
+  font-size: 0.9rem;
+}
+
+/* --------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Only the pointer-driven transforms are reset. The structural depth — each
+     layer's translateZ and its scale compensation — is left alone: with JS
+     never writing --mx/--my/--sy under reduced motion the scene is already a
+     still image, and zeroing those would resize and misplace it. */
+  .stage,
+  .heroCopy,
+  .card,
+  .cardScene svg {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .layer,
+  .sun,
+  .storm,
+  .flashLayer {
+    transition: none !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .scrollCue::after {
+    animation: none;
+  }
+}
+
+
+/* ------------------------------------------------------- living motion --- */
+
+/*
+ * The fourth dimension: time.
+ *
+ * Everything above reacts to the pointer, which means the scene is dead until
+ * someone touches it. These animations give it its own life — the panes breathe
+ * in depth, the stage swings slowly, the floor drifts — so it is moving before
+ * you arrive and keeps moving when you stop.
+ *
+ * All of it uses the INDIVIDUAL transform properties (`translate`, `rotate`,
+ * `scale`) rather than `transform`. That is the whole trick: `transform` is
+ * already spoken for by the depth and the pointer parallax, and animating it
+ * here would overwrite them. The individual properties compose with it instead
+ * — the browser applies translate, then rotate, then scale, then transform —
+ * so the two systems layer without either knowing about the other.
+ *
+ * Every animation is transform-only and therefore compositor-only: no layout,
+ * no paint, no re-rasterising. Durations are deliberately prime-ish and
+ * unequal, so the panes never fall into step and start to look mechanical.
+ */
+
+.stage {
+  animation: sway 21s ease-in-out infinite alternate;
+}
+
+@keyframes sway {
+  from {
+    rotate: y -1.6deg;
+  }
+  to {
+    rotate: y 1.6deg;
+  }
+}
+
+/* Depth breathing: each pane drifts toward and away from the camera. Because
+   this is translate on Z, it genuinely changes the parallax relationship with
+   its neighbours rather than just sliding about. */
+.paneA {
+  animation: floatA 13s ease-in-out infinite alternate;
+}
+
+.paneB {
+  animation: floatB 17s ease-in-out infinite alternate;
+}
+
+.paneC {
+  animation: floatC 11s ease-in-out infinite alternate;
+}
+
+.paneD {
+  animation: floatD 19s ease-in-out infinite alternate;
+}
+
+.paneE {
+  animation: floatE 23s ease-in-out infinite alternate;
+}
+
+@keyframes floatA {
+  to {
+    translate: 1.5rem -1.1rem 60px;
+    rotate: 2.5deg;
+  }
+}
+
+@keyframes floatB {
+  to {
+    translate: -1.2rem 1.4rem -70px;
+    rotate: -3deg;
+  }
+}
+
+@keyframes floatC {
+  to {
+    translate: 1.8rem 0.9rem 90px;
+    rotate: 1.8deg;
+  }
+}
+
+@keyframes floatD {
+  to {
+    translate: -1.6rem -1.3rem -50px;
+    rotate: -2.2deg;
+  }
+}
+
+@keyframes floatE {
+  to {
+    translate: 0.9rem 1.6rem 40px;
+    rotate: 1.2deg;
+  }
+}
+
+/* The floor slides under everything, which is what gives the scene a sense of
+   travelling rather than merely wobbling. */
+.gridPlane {
+  animation: floorDrift 40s linear infinite;
+}
+
+@keyframes floorDrift {
+  to {
+    background-position: 0 8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .pane,
+  .gridPlane,
+  .aura {
+    animation: none !important;
+  }
+}
+
+/* ----------------------------------------------------------- dashboard --- */
+
+.dashGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+  gap: clamp(0.8rem, 1.8vw, 1.15rem);
+  margin-bottom: clamp(1rem, 2.5vw, 1.6rem);
+}
+
+/*
+ * A stat tile. The coloured wash is applied per tone below as a gradient in the
+ * top-left corner rather than as a border or a full fill: it tints the glass
+ * the way a nearby light would, which keeps four tiles side by side reading as
+ * one material in four colours instead of four different components.
+ */
+.tile {
+  position: relative;
+  display: grid;
+  gap: 0.35rem;
+  padding: clamp(1.1rem, 2.4vw, 1.5rem);
+  border-radius: var(--r-md);
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-brd);
+  box-shadow: var(--glass-inner), var(--shadow-panel);
+  overflow: hidden;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease),
+    border-color 0.3s var(--ease);
+}
+
+.tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    120% 100% at 0% 0%,
+    var(--tone, rgba(217, 160, 94, 0.3)) 0%,
+    transparent 62%
+  );
+  pointer-events: none;
+}
+
+.tile:hover {
+  transform: translateY(-3px);
+  border-color: var(--glass-brd-lit);
+  box-shadow: var(--glass-inner), var(--shadow-panel),
+    0 0 2.5rem -0.6rem var(--tone, rgba(217, 160, 94, 0.5));
+}
+
+/* Deeper than they were on the dark theme: a 30%-alpha wash that read clearly
+   against near-black disappears into cream. Each still carries its own meaning
+   — caramel for volume, amber for waiting, green for settled, toffee for
+   people — but within one warm family. */
+.toneBlue {
+  --tone: rgba(192, 122, 53, 0.42);
+}
+
+.toneAmber {
+  --tone: rgba(214, 158, 46, 0.44);
+}
+
+.toneGreen {
+  --tone: rgba(52, 160, 110, 0.36);
+}
+
+.toneViolet {
+  --tone: rgba(154, 95, 40, 0.42);
+}
+
+.tileValue {
+  position: relative;
+  font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.tileLabel {
+  position: relative;
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- chart --- */
+
+.chartCard {
+  padding: clamp(1.25rem, 2.6vw, 1.75rem);
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px solid var(--glass-brd);
+  backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: var(--glass-inner), var(--shadow-panel);
+}
+
+.chartHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.chartTitle {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.chartNote {
+  margin: 0.35rem 0 0;
+  max-width: 46ch;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.chartTotal {
+  flex: none;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--toffee);
+  background: rgba(196, 130, 61, 0.16);
+  border: 1px solid rgba(196, 130, 61, 0.35);
+}
+
+/* Fixed height, fluid width: `preserveAspectRatio="none"` in the SVG lets the
+   line stretch horizontally without the dots turning into ellipses, because
+   they are drawn after the viewBox is mapped. */
+.chart {
+  display: block;
+  width: 100%;
+  height: clamp(9rem, 22vw, 13rem);
+  overflow: visible;
+}
+
+.chartPeak {
+  fill: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.chartEmpty {
+  margin: 0;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--faint);
+  font-size: 0.9rem;
+}
+
+/* --------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Only the pointer-driven transforms are reset. The structural depth — each
+     pane's translateZ and its scale compensation — is left alone: with JS never
+     writing --mx/--my/--sy the scene is already still, and zeroing those would
+     resize and misplace every pane. */
+  .stage,
+  .heroCopy,
+  .card {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .aura {
+    animation: none;
+  }
+
+  .pane,
+  .gridPlane {
+    transition: none !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .scrollCue::after {
+    animation: none;
+  }
+}
