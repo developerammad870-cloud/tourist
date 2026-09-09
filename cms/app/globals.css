@@ -226,3 +226,83 @@ body::before {
   margin: -32px;
   width: calc(100% + 64px);
 }
+
+
+/* ------------------------------------------------------------- narrow --- */
+
+/*
+ * Phones and narrow windows.
+ *
+ * The rail is fixed at 186px with the content margined past it, which on a
+ * 412px screen leaves about 190px to work in — the dashboard and the hero were
+ * simply running off the side. Below this width the rail stops being a rail:
+ * it unpins, sits across the top, and its links scroll sideways, which gives
+ * the content the whole width back.
+ *
+ * One breakpoint, because this is a change of *kind* — a column becoming a bar
+ * — not a change of size. Everything else in the app is already fluid.
+ */
+@media (max-width: 48rem) {
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar,
+  .sidebar-closed {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: auto;
+    padding: 0.6rem 0.75rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--glass-brd);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  /* The collapse toggle is meaningless once the rail is a bar. */
+  .sidebar .collapse-btn {
+    display: none;
+  }
+
+  .sidebar h2.logo {
+    margin: 0 0.5rem 0 0;
+    padding: 0;
+    font-size: 18px;
+    flex: none;
+  }
+
+  .sidebar ul {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex: 1;
+  }
+
+  .sidebar ul li {
+    margin: 0;
+    flex: none;
+  }
+
+  .sidebar a {
+    padding: 0.5rem 0.7rem;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .main-content,
+  .main-full {
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  /* The home hero still runs full-bleed; the negative margin has to match the
+     padding above it, or it tears a gap down both sides. */
+  .main-content > .home-page {
+    margin: -1rem;
+    width: calc(100% + 2rem);
+  }
+}
