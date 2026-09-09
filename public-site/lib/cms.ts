@@ -10,11 +10,28 @@
  * and the account screen all live there now, and the public site is the shop
  * window.
  *
- * Set NEXT_PUBLIC_CMS_URL when the CMS is not on localhost:3001 — it has to be
- * NEXT_PUBLIC_ because these links render in the browser.
+ * NEXT_PUBLIC_CMS_URL overrides where they point. It has to be NEXT_PUBLIC_
+ * because these links render in the browser, which also means it is baked in at
+ * build time — changing it needs a redeploy, not just a restart.
+ *
+ * Both fallbacks below matter. Without a production default, a deployment with
+ * the variable unset sends real visitors to `localhost:3001`, which fails
+ * silently for everyone but the developer. And an obviously-unfilled
+ * placeholder is treated as unset rather than trusted — a link to a domain that
+ * does not exist is worse than a link to the right default, because it returns
+ * a 404 that looks like the app is broken.
  */
 
-const CMS_URL = process.env.NEXT_PUBLIC_CMS_URL ?? "http://localhost:3001";
+const PRODUCTION_CMS = "https://tourist-cms.vercel.app";
+const DEVELOPMENT_CMS = "http://localhost:3001";
+
+const configured = process.env.NEXT_PUBLIC_CMS_URL?.trim();
+const usable =
+  configured && !configured.includes("REPLACE-WITH") ? configured : undefined;
+
+const CMS_URL =
+  usable ??
+  (process.env.NODE_ENV === "production" ? PRODUCTION_CMS : DEVELOPMENT_CMS);
 
 /** Absolute URL for a CMS path, e.g. cms("/bookings"). */
 export function cms(path = "/"): string {
