@@ -57,7 +57,7 @@ export async function POST(request: Request) {
       createdAt: new Date(),
     });
 
-    const token = createSessionToken({
+    const token = await createSessionToken({
       id: String(result.insertedId),
       name: String(name).trim(),
       email: normalisedEmail,

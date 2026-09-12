@@ -1,6 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
 import { heroSlides } from "@/app/content/hero";
-import { cmsRoutes } from "@/lib/cms";
 import s from "./Home.module.css";
 
 /**
@@ -80,10 +80,9 @@ export default function Hero() {
           <a className={`${s.btn} ${s.btnPrimary}`} href="#destinations">
             Explore the collection
           </a>
-          {/* Booking lives in the CMS, a separate app — see lib/cms.ts. */}
-          <a className={`${s.btn} ${s.btnGlass}`} href={cmsRoutes.book}>
+          <Link className={`${s.btn} ${s.btnGlass}`} href="/book">
             Plan a private trip
-          </a>
+          </Link>
         </div>
       </div>
 

@@ -58,10 +58,11 @@ export async function POST(request: Request) {
       user: sessionUser,
     });
 
-    response.cookies.set(sessionCookie.name, createSessionToken(sessionUser), {
-      ...sessionCookie.options,
-      maxAge: sessionCookie.maxAge,
-    });
+    response.cookies.set(
+      sessionCookie.name,
+      await createSessionToken(sessionUser),
+      { ...sessionCookie.options, maxAge: sessionCookie.maxAge }
+    );
 
     return response;
   } catch (error) {

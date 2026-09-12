@@ -6,7 +6,6 @@ import { hotels } from "@/app/content/hotels";
 import s from "@/app/components/public/pages.module.css";
 import n from "@/app/components/public/public.module.css";
 import u from "@/app/components/ui/ui.module.css";
-import { cmsRoutes } from "@/lib/cms";
 
 /**
  * Single trip page.
@@ -197,13 +196,12 @@ export default async function DestinationDetail(
               </li>
             </ul>
 
-            {/* The request form lives in the CMS — see lib/cms.ts. */}
-            <a
-              href={`${cmsRoutes.book}?trip=${trip.id}`}
+            <Link
+              href={`/book?trip=${trip.id}`}
               className={`${n.btn} ${n.btnPrimary} ${s.asideBtn}`}
             >
               Request this trip
-            </a>
+            </Link>
           </aside>
         </div>
       </div>

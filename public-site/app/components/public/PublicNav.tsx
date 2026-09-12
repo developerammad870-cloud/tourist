@@ -64,12 +64,17 @@ export default function PublicNav({ user }: { user: SessionUser | null }) {
                 <path d="m6 6 12 12" />
               </>
             ) : (
-              <>
-                <path d="M3 12h18" />
-                <path d="M3 6h18" />
-                <path d="M3 18h18" />
-              </>
-            )}
+            // Signing in happens here now, not in the CMS: this site has its
+            // own accounts, its own JWT session cookie and its own booking
+            // form, so a visitor never has to leave it.
+            <Link
+              href="/login"
+              className={`${s.btn} ${s.btnGhost} ${s.btnSmall}`}
+              onClick={() => setOpen(false)}
+            >
+              Login
+            </Link>
+          )}
           </svg>
         </button>
 

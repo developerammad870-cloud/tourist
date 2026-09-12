@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { destinations } from "@/app/content/destinations";
 import s from "@/app/components/public/pages.module.css";
 import n from "@/app/components/public/public.module.css";
-import { cmsRoutes } from "@/lib/cms";
 
 export const metadata: Metadata = {
   title: "Destinations",
@@ -89,9 +88,9 @@ export default function DestinationsPage() {
           <Link href="/contact" className={`${n.btn} ${s.btnLight}`}>
             Ask us
           </Link>
-          <a href={cmsRoutes.book} className={`${n.btn} ${s.btnOutline}`}>
+          <Link href="/book" className={`${n.btn} ${s.btnOutline}`}>
             Start a trip request
-          </a>
+          </Link>
         </div>
       </section>
     </div>

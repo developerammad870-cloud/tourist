@@ -4,7 +4,6 @@ import Reveal from "../components/home/Reveal";
 import TripCard from "../components/home/TripCard";
 import { destinations, getDestination } from "../content/destinations";
 import { site } from "../content/site";
-import { cmsRoutes } from "@/lib/cms";
 import s from "../components/home/Home.module.css";
 
 /**
@@ -188,12 +187,12 @@ export default function Home() {
               stays in one place.
             </p>
             <div className={s.ctaActions}>
-              <a className={`${s.btn} ${s.btnLight}`} href={cmsRoutes.book}>
+              <Link className={`${s.btn} ${s.btnLight}`} href="/book">
                 Start a trip request
-              </a>
-              <a className={`${s.btn} ${s.btnOutline}`} href={cmsRoutes.signUp}>
+              </Link>
+              <Link className={`${s.btn} ${s.btnOutline}`} href="/signUp">
                 Create an account
-              </a>
+              </Link>
             </div>
           </div>
         </Reveal>

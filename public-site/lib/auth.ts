@@ -1,17 +1,21 @@
-import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
+import { SignJWT, jwtVerify } from "jose";
 
 /**
  * Password hashing and session tokens.
  *
- * Sessions are stateless signed cookies rather than rows in a `sessions`
- * collection: the payload is base64url JSON with an HMAC-SHA256 signature
- * appended, so the server can verify a session without a database round trip
- * on every request. The trade-off is that a token can't be revoked before it
- * expires — acceptable at this size, and the reason the lifetime is short.
+ * Sessions are stateless JWTs carried in an httpOnly cookie rather than rows in
+ * a `sessions` collection: the server can verify who you are from the cookie
+ * alone, with no database round trip on every request. The trade-off is that a
+ * token cannot be revoked before it expires — acceptable at this size, and the
+ * reason the lifetime is a week rather than a year.
  *
- * `node:crypto` is used directly instead of a JWT library because this needs
- * no algorithm negotiation and no third-party keys; it's one HMAC.
+ * Signed with HS256 via `jose`, which is what the Next.js authentication guide
+ * recommends and, unlike `jsonwebtoken`, runs in the Edge runtime — so if route
+ * protection ever moves into proxy.ts, this module can move with it unchanged.
+ *
+ * Everything here is async because signing and verifying are: `jose` returns
+ * promises, and hiding that behind a sync wrapper would mean blocking or lying.
  */
 
 const SESSION_COOKIE = "session";
@@ -28,12 +32,15 @@ export type SessionUser = {
   role: Role;
 };
 
-type SessionPayload = SessionUser & {
-  /** Unix seconds. */
-  exp: number;
-};
-
-function getSecret(): string {
+/**
+ * The signing key, derived from AUTH_SECRET.
+ *
+ * Read at call time rather than at module load: a missing secret should fail
+ * the request that needed it, with a message saying what to do, not crash the
+ * whole app at import time — including during a build, where no request is
+ * being served and the variable may legitimately be absent.
+ */
+function getKey(): Uint8Array {
   const secret = process.env.AUTH_SECRET;
 
   if (!secret || secret.length < 32) {
@@ -42,8 +49,12 @@ function getSecret(): string {
     );
   }
 
-  return secret;
+  return new TextEncoder().encode(secret);
 }
+
+/** Identifies tokens minted by this app, and rejects anything else. */
+const ISSUER = "travel-with-ammad";
+const AUDIENCE = "travel-with-ammad:web";
 
 /* ------------------------------------------------------------------ */
 /* Passwords                                                           */
@@ -61,68 +72,56 @@ export function verifyPassword(plain: string, hash: string): Promise<boolean> {
 /* Session tokens                                                      */
 /* ------------------------------------------------------------------ */
 
-function base64url(input: Buffer | string): string {
-  return Buffer.from(input)
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-}
-
-function sign(data: string): string {
-  return base64url(
-    crypto.createHmac("sha256", getSecret()).update(data).digest()
-  );
-}
-
-/** Builds a `<payload>.<signature>` token for the given user. */
-export function createSessionToken(user: SessionUser): string {
-  const payload: SessionPayload = {
-    ...user,
-    exp: Math.floor(Date.now() / 1000) + SESSION_MAX_AGE,
-  };
-
-  const body = base64url(JSON.stringify(payload));
-
-  return `${body}.${sign(body)}`;
+/**
+ * Mints a signed JWT for the given user.
+ *
+ * The standard claims carry the identity — `sub` is the user id — and the
+ * display fields ride alongside so the navbar can greet someone without a
+ * database read on every page. Nothing secret goes in: a JWT is signed, not
+ * encrypted, and anyone holding the cookie can read its payload.
+ */
+export async function createSessionToken(user: SessionUser): Promise<string> {
+  return new SignJWT({ name: user.name, email: user.email, role: user.role })
+    .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+    .setSubject(user.id)
+    .setIssuer(ISSUER)
+    .setAudience(AUDIENCE)
+    .setIssuedAt()
+    .setExpirationTime(`${SESSION_MAX_AGE}s`)
+    .sign(getKey());
 }
 
 /**
  * Returns the session user, or null when the token is missing, tampered with,
  * malformed or expired. Never throws on bad input — callers treat null as
- * "logged out".
+ * "logged out", and a bad cookie must not be able to 500 a page.
+ *
+ * `jwtVerify` does the work that matters: it checks the signature, enforces
+ * `exp`, and — because the algorithm is pinned — refuses a token whose header
+ * claims `alg: none` or swaps in something weaker. That last part is the
+ * classic JWT hole, and it is closed by naming the algorithm here rather than
+ * trusting the one in the header.
  */
-export function verifySessionToken(token: string | undefined): SessionUser | null {
+export async function verifySessionToken(
+  token: string | undefined
+): Promise<SessionUser | null> {
   if (!token) return null;
 
-  const [body, signature] = token.split(".");
-
-  if (!body || !signature) return null;
-
-  const expected = sign(body);
-
-  // Constant-time compare so a wrong signature can't be guessed byte by byte.
-  // timingSafeEqual throws on a length mismatch, hence the length check first.
-  if (
-    signature.length !== expected.length ||
-    !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
-  ) {
-    return null;
-  }
-
   try {
-    const payload = JSON.parse(
-      Buffer.from(body, "base64url").toString()
-    ) as SessionPayload;
+    const { payload } = await jwtVerify(token, getKey(), {
+      algorithms: ["HS256"],
+      issuer: ISSUER,
+      audience: AUDIENCE,
+    });
 
-    if (typeof payload.exp !== "number" || payload.exp < Date.now() / 1000) {
-      return null;
-    }
+    if (!payload.sub) return null;
 
     return {
-      id: payload.id,
-      name: payload.name,
-      email: payload.email,
+      id: payload.sub,
+      name: typeof payload.name === "string" ? payload.name : "",
+      email: typeof payload.email === "string" ? payload.email : "",
+      // Anything that is not exactly "admin" is a normal user. A role is an
+      // authorisation decision, so it fails closed.
       role: payload.role === "admin" ? "admin" : "user",
     };
   } catch {
