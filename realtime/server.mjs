@@ -16,20 +16,56 @@
  * at the same time from disagreeing: both see the same broadcast, and the
  * broadcast comes from the write that actually happened.
  *
- * SECURITY, PLAINLY: this app has no sign-in (see the CMS README), so anything
- * that can reach this port can confirm or cancel a booking. The commands below
- * are validated hard — known type, known status, well-formed id, nothing else
- * touched — but validation is not authorisation. Before this is exposed beyond
- * localhost it needs a real session check on the upgrade request.
+ * SECURITY: a browser can only open a socket by presenting a ticket — a JWT
+ * the CMS issues to signed-in admins, valid for sixty seconds, with its own
+ * audience so neither a CMS session token nor a public-site token can be
+ * replayed as one. No ticket, a forged one, an expired one, or a non-admin's:
+ * the upgrade is refused before the handshake completes. Commands are then
+ * checked against the admitted user's role again, because this is the process
+ * that changes data. The /publish endpoint is separate and server-to-server,
+ * guarded by REALTIME_TOKEN.
  */
 import { createServer } from "node:http";
 import { createHash, randomUUID } from "node:crypto";
 import { MongoClient, ObjectId } from "mongodb";
+import { jwtVerify } from "jose";
 
 const PORT = Number(process.env.PORT || 3002);
 const TOKEN = process.env.REALTIME_TOKEN || "dev-token";
 const MONGODB_URI = process.env.MONGODB_URI;
 const MONGODB_DB = process.env.MONGODB_DB;
+
+/** Line ending for raw HTTP written to a socket, spelled without escapes. */
+const CRLF = String.fromCharCode(13, 10);
+
+/*
+ * The key tickets are verified with. The same AUTH_SECRET the CMS signs with;
+ * without it every connection is refused, which is the safe failure.
+ */
+const TICKET_KEY = process.env.AUTH_SECRET
+  ? new TextEncoder().encode(process.env.AUTH_SECRET)
+  : null;
+
+/**
+ * The admin a ticket was issued to, or null. Algorithm, issuer and audience are
+ * all pinned: the audience is what stops any other token from this family of
+ * apps being accepted as a socket pass.
+ */
+async function verifyTicket(ticket) {
+  if (!TICKET_KEY || !ticket) return null;
+  try {
+    const { payload } = await jwtVerify(ticket, TICKET_KEY, {
+      algorithms: ["HS256"],
+      issuer: "travel-with-ammad",
+      audience: "travel-with-ammad:socket",
+    });
+    return payload.role === "admin" && payload.sub
+      ? { id: payload.sub, role: "admin" }
+      : null;
+  } catch {
+    return null;
+  }
+}
 
 /** The only statuses a command may set. Anything else is rejected. */
 const ALLOWED_STATUS = new Set(["confirmed", "cancelled", "pending"]);
@@ -252,12 +288,20 @@ const server = createServer((req, res) => {
 
 /* --------------------------------------------------------- websocket side */
 
-server.on("upgrade", (req, socket) => {
+server.on("upgrade", async (req, socket) => {
   const key = req.headers["sec-websocket-key"];
   const url = new URL(req.url, `http://${req.headers.host}`);
 
   if (url.pathname !== "/ws" || !key) {
     socket.end("HTTP/1.1 400 Bad Request\r\n\r\n");
+    return;
+  }
+
+  // Refused before the handshake: the browser sees the connection fail and
+  // never learns anything about what is on the other side.
+  const user = await verifyTicket(url.searchParams.get("ticket"));
+  if (!user) {
+    socket.end(["HTTP/1.1 401 Unauthorized", "Connection: close", "", ""].join(CRLF));
     return;
   }
 
@@ -270,7 +314,7 @@ server.on("upgrade", (req, socket) => {
   );
 
   const id = randomUUID();
-  const client = { socket, alive: true };
+  const client = { socket, alive: true, user };
   clients.set(id, client);
   socket.setNoDelay(true);
 
@@ -319,6 +363,10 @@ async function handleCommand(client, raw) {
   } catch {
     return; // not JSON, not ours
   }
+
+  // Every socket was admitted on an admin ticket, but this is the function that
+  // changes data, so it checks for itself rather than trusting the door.
+  if (client.user?.role !== "admin") return;
 
   const reply = (payload) => {
     try {

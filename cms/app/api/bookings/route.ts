@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { guardApi } from "@/lib/session";
 import { getDb } from "@/lib/mongodb";
 import { destinations } from "@/app/components/home/destinations";
 import { publish } from "@/lib/realtime";
@@ -12,6 +13,9 @@ import { publish } from "@/lib/realtime";
 
 // GET - list bookings, newest first
 export async function GET() {
+  const guard = await guardApi("admin");
+  if (guard.denied) return guard.denied;
+
   try {
     const db = await getDb();
     const bookings = await db
@@ -32,6 +36,9 @@ export async function GET() {
 
 // POST - create a booking request
 export async function POST(request: Request) {
+  const guard = await guardApi("user");
+  if (guard.denied) return guard.denied;
+
   try {
     const body = await request.json();
     const { name, email, phone, destinationId, departDate, travellers, notes } = body;

@@ -9,6 +9,7 @@
     "start": "node server.mjs"
   },
   "dependencies": {
-    "mongodb": "^7.5.0"
+    "jose": "^6.2.12",
+    "mongodb": "^7.6.0"
   }
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { guardApi } from "@/lib/session";
 import { getDb } from "@/lib/mongodb";
 import { hashPassword, type Role } from "@/lib/passwords";
 
@@ -16,6 +17,9 @@ import { hashPassword, type Role } from "@/lib/passwords";
 
 // GET - list all users
 export async function GET() {
+  const guard = await guardApi("admin");
+  if (guard.denied) return guard.denied;
+
   try {
     const db = await getDb();
 
@@ -38,6 +42,9 @@ export async function GET() {
 
 // POST - create a user
 export async function POST(request: Request) {
+  const guard = await guardApi("admin");
+  if (guard.denied) return guard.denied;
+
   try {
     const body = await request.json();
     const { name, email, password } = body;

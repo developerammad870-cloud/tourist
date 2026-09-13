@@ -38,7 +38,7 @@ import Particles from "./Particles";
  * tree ~60×/second. Updates are coalesced into one rAF, so a burst of events
  * costs a single frame.
  */
-export default function Hero() {
+export default function Hero({ isAdmin = false }: { isAdmin?: boolean }) {
   const ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -152,10 +152,17 @@ export default function Hero() {
   Bookings, orders, hotels, travellers — live, the moment anything changes.
 </p>
         <div className={s.actions}>
-          <a className={`${s.btn} ${s.btnPrimary}`} href="/orders">
-            Open orders
-          </a>
-          <a className={`${s.btn} ${s.btnGhost}`} href="/bookings">
+          {/* Orders is admin-only, so a user gets New booking as the primary
+              action rather than a button that would only bounce them. */}
+          {isAdmin && (
+            <a className={`${s.btn} ${s.btnPrimary}`} href="/orders">
+              Open orders
+            </a>
+          )}
+          <a
+            className={`${s.btn} ${isAdmin ? s.btnGhost : s.btnPrimary}`}
+            href="/bookings"
+          >
             New booking
           </a>
         </div>

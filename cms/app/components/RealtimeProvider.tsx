@@ -69,8 +69,16 @@ export function useRealtime(): Realtime {
 
 export default function RealtimeProvider({
   children,
+  isAdmin = false,
 }: {
   children: React.ReactNode;
+  /**
+   * Whether the signed-in user may hold a socket at all. Only admins can get a
+   * ticket from /api/realtime/ticket, so for anyone else this stays "off"
+   * without ever trying: no failed request, no reconnect loop, no "Offline"
+   * pill implying something is broken.
+   */
+  isAdmin?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -85,7 +93,7 @@ export default function RealtimeProvider({
    * status into state from inside the effect.
    */
   const [socketStatus, setSocketStatus] = useState<Status>("connecting");
-  const status: Status = live ? socketStatus : "off";
+  const status: Status = live && isAdmin ? socketStatus : "off";
 
   const socketRef = useRef<WebSocket | null>(null);
   const listeners = useRef(new Set<(event: ServerEvent) => void>());
@@ -95,14 +103,33 @@ export default function RealtimeProvider({
   useEffect(() => {
     // Not a live screen: no socket. Any existing one was already closed by
     // this effect's cleanup when the route changed.
-    if (!live) return;
+    if (!live || !isAdmin) return;
 
     let retry: ReturnType<typeof setTimeout> | undefined;
     let attempt = 0;
     let closed = false; // set on unmount so a queued retry doesn't reopen
 
-    const connect = () => {
-      const socket = new WebSocket(WS_URL);
+    const connect = async () => {
+      /*
+       * A fresh ticket on every attempt, reconnects included. Tickets live for
+       * sixty seconds, so one fetched on first load is long dead by the time a
+       * dropped connection comes round to retry.
+       */
+      let ticket: string;
+      try {
+        const res = await fetch("/api/realtime/ticket", { cache: "no-store" });
+        const data = await res.json();
+        if (!res.ok || typeof data.ticket !== "string") throw new Error("no ticket");
+        ticket = data.ticket;
+      } catch {
+        if (closed) return;
+        setSocketStatus("down");
+        retry = setTimeout(connect, Math.min(15000, 1000 * 2 ** attempt++));
+        return;
+      }
+      if (closed) return;
+
+      const socket = new WebSocket(`${WS_URL}?ticket=${encodeURIComponent(ticket)}`);
       socketRef.current = socket;
 
       socket.onopen = () => {
@@ -151,7 +178,7 @@ export default function RealtimeProvider({
       socket.onerror = () => socket.close();
     };
 
-    connect();
+    void connect();
 
     return () => {
       closed = true;
@@ -159,7 +186,7 @@ export default function RealtimeProvider({
       socketRef.current?.close();
       socketRef.current = null;
     };
-  }, [router, live]);
+  }, [router, live, isAdmin]);
 
   const send = useCallback(
     (message: Record<string, unknown>) =>

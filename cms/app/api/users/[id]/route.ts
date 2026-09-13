@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { guardApi } from "@/lib/session";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 
@@ -19,6 +20,9 @@ function toObjectId(id: string) {
 
 // PUT - update a user
 export async function PUT(request: Request, ctx: RouteContext<"/api/users/[id]">) {
+  const guard = await guardApi("admin");
+  if (guard.denied) return guard.denied;
+
   try {
     const { id } = await ctx.params;
     const _id = toObjectId(id);
@@ -114,6 +118,9 @@ export async function PUT(request: Request, ctx: RouteContext<"/api/users/[id]">
 
 // DELETE - remove a user
 export async function DELETE(_request: Request, ctx: RouteContext<"/api/users/[id]">) {
+  const guard = await guardApi("admin");
+  if (guard.denied) return guard.denied;
+
   try {
     const { id } = await ctx.params;
     const _id = toObjectId(id);

@@ -1,5 +1,6 @@
 import Dashboard from "./components/home/Dashboard";
 import Hero from "./components/home/Hero";
+import { requireUser } from "@/lib/session";
 import Reveal from "./components/home/Reveal";
 import TiltCard from "./components/home/TiltCard";
 import { destinations } from "./components/home/destinations";
@@ -16,10 +17,19 @@ import s from "./components/home/Home.module.css";
  */
 
 export const dynamic = "force-dynamic";
-export default function Home() {
+export default async function Home(props: PageProps<"/">) {
+  const user = await requireUser("/");
+  const { denied } = await props.searchParams;
   return (
     <div className={`${s.page} home-page`}>
-      <Hero />
+      {/* Set by proxy.ts when a signed-in user asks for an admin-only screen:
+          without it they land here with no idea why the link did nothing. */}
+      {typeof denied === "string" && (
+        <p className={s.denied} role="status">
+          <strong>{denied}</strong> is for admins. You are signed in as a user.
+        </p>
+      )}
+      <Hero isAdmin={user.role === "admin"} />
 
       <Dashboard />
 

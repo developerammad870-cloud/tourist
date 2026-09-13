@@ -1555,3 +1555,15 @@
     animation: none;
   }
 }
+
+/* Shown when proxy.ts turned a signed-in user away from an admin-only screen. */
+.denied {
+  position: relative;
+  z-index: 5;
+  margin: 0;
+  padding: 0.75rem clamp(1.25rem, 4vw, 3rem);
+  font-size: 0.9rem;
+  color: #7a5410;
+  background: rgba(214, 158, 46, 0.16);
+  border-bottom: 1px solid rgba(214, 158, 46, 0.38);
+}

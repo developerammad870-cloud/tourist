@@ -4,6 +4,7 @@ import "./globals.css";
 import Shell from "./components/Sidebar";
 import LiveFeed from "./components/LiveFeed";
 import RealtimeProvider from "./components/RealtimeProvider";
+import { getSession } from "@/lib/session";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,21 +23,29 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function RootLayout({
+/**
+ * Reads the session once, here, for the whole shell: the sidebar draws the links
+ * this role may use, and the socket is only attempted for an admin.
+ *
+ * Reading cookies in the root layout makes every page render per request. In a
+ * back office where every screen is now per-user, that is the correct cost — a
+ * statically cached page would serve one person's sidebar to the next.
+ */
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getSession();
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex">
-        {/* One socket for the whole back office: the feed listens on it and
-            the order buttons send on it. */}
-        <RealtimeProvider>
-          <Shell>{children}</Shell>
+        <RealtimeProvider isAdmin={user?.role === "admin"}>
+          <Shell user={user}>{children}</Shell>
           <LiveFeed />
         </RealtimeProvider>
       </body>

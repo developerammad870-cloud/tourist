@@ -4,6 +4,7 @@ import OrderActions from "../components/OrderActions";
 import OrderCorner from "../components/OrderCorner";
 import live from "../components/live.module.css";
 import { getDb } from "@/lib/mongodb";
+import { requireAdmin } from "@/lib/session";
 
 /**
  * Orders screen, backed by the `bookings` collection in MongoDB.
@@ -90,6 +91,9 @@ async function getOrders(): Promise<Order[]> {
 }
 
 export default async function Orders() {
+  // proxy.ts already turns non-admins away; this is the second lock, so a
+  // routing mistake there cannot put every customer's details on screen.
+  await requireAdmin("/orders");
   const orders = await getOrders();
 
   return (

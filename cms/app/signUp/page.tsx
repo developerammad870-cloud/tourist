@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import s from "../components/ui/ui.module.css";
@@ -15,6 +16,7 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const router = useRouter();
   const [ok, setOk] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -25,7 +27,9 @@ export default function SignUp() {
     setMessage("");
 
     try {
-      const response = await fetch("/api/users", {
+      // /api/auth/register, never /api/users: that is the admin endpoint and it
+      // reads `role` from the body. This one can only ever create a user.
+      const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -40,12 +44,12 @@ export default function SignUp() {
       const data = await response.json();
 
       if (data.success) {
+        // Registration also signs the person in (the cookie is already set),
+        // so go straight in rather than asking them to type it all again.
         setOk(true);
-        setMessage("Account created successfully.");
-
-        setName("");
-        setEmail("");
-        setPassword("");
+        setMessage("Account created — signing you in…");
+        router.replace("/");
+        router.refresh();
       } else {
         setOk(false);
         setMessage(data.message);

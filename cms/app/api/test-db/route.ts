@@ -1,6 +1,10 @@
 import clientPromise from "@/lib/mongodb";
+import { guardApi } from "@/lib/session";
 
 export async function GET() {
+  const guard = await guardApi("admin");
+  if (guard.denied) return guard.denied;
+
   try {
     const client = await clientPromise;
 
