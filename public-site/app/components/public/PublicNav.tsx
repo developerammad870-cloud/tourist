@@ -120,16 +120,14 @@ export default function PublicNav({ user }: { user: SessionUser | null }) {
               </button>
             </>
           ) : (
-            // Signing in happens on this site, not in the CMS: it has its own
-            // accounts, JWT session cookie and booking form, so a visitor
-            // never has to leave it.
-            <Link
-              href="/login"
+            // Logging in happens in the CMS, so this leaves the public app.
+            <a
+              href={cmsRoutes.signIn}
               className={`${s.btn} ${s.btnGhost} ${s.btnSmall}`}
               onClick={() => setOpen(false)}
             >
               Login
-            </Link>
+            </a>
           )}
         </div>
       </nav>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { destinations } from "@/app/content/destinations";
+import { cmsRoutes } from "@/lib/cms";
 import s from "@/app/components/public/pages.module.css";
 import n from "@/app/components/public/public.module.css";
 
@@ -88,9 +89,9 @@ export default function DestinationsPage() {
           <Link href="/contact" className={`${n.btn} ${s.btnLight}`}>
             Ask us
           </Link>
-          <Link href="/book" className={`${n.btn} ${s.btnOutline}`}>
+          <a href={cmsRoutes.book} className={`${n.btn} ${s.btnOutline}`}>
             Start a trip request
-          </Link>
+          </a>
         </div>
       </section>
     </div>

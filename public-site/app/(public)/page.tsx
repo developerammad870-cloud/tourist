@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cmsRoutes } from "@/lib/cms";
 import Hero from "../components/home/Hero";
 import Reveal from "../components/home/Reveal";
 import TripCard from "../components/home/TripCard";
@@ -187,12 +188,13 @@ export default function Home() {
               stays in one place.
             </p>
             <div className={s.ctaActions}>
-              <Link className={`${s.btn} ${s.btnLight}`} href="/book">
+              {/* Both open the CMS, a separate app, so plain <a> tags. */}
+              <a className={`${s.btn} ${s.btnLight}`} href={cmsRoutes.book}>
                 Start a trip request
-              </Link>
-              <Link className={`${s.btn} ${s.btnOutline}`} href="/signUp">
+              </a>
+              <a className={`${s.btn} ${s.btnOutline}`} href={cmsRoutes.signUp}>
                 Create an account
-              </Link>
+              </a>
             </div>
           </div>
         </Reveal>

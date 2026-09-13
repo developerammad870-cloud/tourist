@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { destinations, getDestination } from "@/app/content/destinations";
 import { hotels } from "@/app/content/hotels";
+import { cmsRoutes } from "@/lib/cms";
 import s from "@/app/components/public/pages.module.css";
 import n from "@/app/components/public/public.module.css";
 import u from "@/app/components/ui/ui.module.css";
@@ -196,12 +197,12 @@ export default async function DestinationDetail(
               </li>
             </ul>
 
-            <Link
-              href={`/book?trip=${trip.id}`}
+            <a
+              href={cmsRoutes.book}
               className={`${n.btn} ${n.btnPrimary} ${s.asideBtn}`}
             >
               Request this trip
-            </Link>
+            </a>
           </aside>
         </div>
       </div>
