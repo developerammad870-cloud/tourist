@@ -138,7 +138,7 @@ export default function SignUp() {
           </form>
 
           <p className={u.hint}>
-            Already have an account? <Link href="/login">Sign in</Link>
+            Already have an account? <Link href="/login">Login</Link>
           </p>
         </div>
       </div>

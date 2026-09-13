@@ -64,17 +64,12 @@ export default function PublicNav({ user }: { user: SessionUser | null }) {
                 <path d="m6 6 12 12" />
               </>
             ) : (
-            // Signing in happens here now, not in the CMS: this site has its
-            // own accounts, its own JWT session cookie and its own booking
-            // form, so a visitor never has to leave it.
-            <Link
-              href="/login"
-              className={`${s.btn} ${s.btnGhost} ${s.btnSmall}`}
-              onClick={() => setOpen(false)}
-            >
-              Login
-            </Link>
-          )}
+              <>
+                <path d="M4 7h16" />
+                <path d="M4 12h16" />
+                <path d="M4 17h16" />
+              </>
+            )}
           </svg>
         </button>
 
@@ -125,15 +120,16 @@ export default function PublicNav({ user }: { user: SessionUser | null }) {
               </button>
             </>
           ) : (
-            // Signing in is the CMS's job now, so this leaves the public app.
-            // The label matches the page it opens — see cms/app/login/page.tsx.
-            <a
-              href={cmsRoutes.signIn}
+            // Signing in happens on this site, not in the CMS: it has its own
+            // accounts, JWT session cookie and booking form, so a visitor
+            // never has to leave it.
+            <Link
+              href="/login"
               className={`${s.btn} ${s.btnGhost} ${s.btnSmall}`}
               onClick={() => setOpen(false)}
             >
               Login
-            </a>
+            </Link>
           )}
         </div>
       </nav>

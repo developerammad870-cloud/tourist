@@ -5,10 +5,8 @@
  * a plain <a> with an absolute URL — next/link cannot client-side navigate
  * across applications, and trying makes the first click look broken.
  *
- * Booking and account actions on the public site are deliberately handed over
- * to the CMS rather than handled here: the request form, the sign-in screen
- * and the account screen all live there now, and the public site is the shop
- * window.
+ * Booking, login and sign-up all happen on the public site itself. The only
+ * link into the CMS is the admin-only "CMS" button in the navbar.
  *
  * NEXT_PUBLIC_CMS_URL overrides where they point. It has to be NEXT_PUBLIC_
  * because these links render in the browser, which also means it is baked in at
@@ -40,9 +38,5 @@ export function cms(path = "/"): string {
 
 /** The CMS screens the public site links to, named so a rename is one edit. */
 export const cmsRoutes = {
-  /** Trip request form. */
-  book: cms("/bookings"),
-  signIn: cms("/login"),
-  signUp: cms("/signUp"),
   home: cms("/"),
 } as const;
