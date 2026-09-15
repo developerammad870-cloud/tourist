@@ -1,0 +1,428 @@
+/*
+ * Shared UI primitives for the inner pages (login, orders, users, bookings,
+ * places, sign-up).
+ *
+ * The home page keeps its own module because it's a one-off landing layout;
+ * everything else shares these so the site reads as one design. Tokens match
+ * Home.module.css deliberately — same ink, muted, accent and radius scale.
+ *
+ * A CSS Module imported by several components is fine: the class names are
+ * hashed once per file, not per importer.
+ */
+
+.page {
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ink: #0d1520;
+  --muted: #5b6b7f;
+  --accent: #2f6fed;
+  --edge: rgba(13, 21, 32, 0.09);
+  --danger: #c0392f;
+
+  width: 100%;
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 3vw, 2.5rem) 0 4rem;
+  color: var(--ink);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* ---------------------------------------------------------------- head --- */
+
+.head {
+  margin-bottom: 2rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+
+.lede {
+  margin: 0.75rem 0 0;
+  max-width: 52ch;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.headRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+/* --------------------------------------------------------------- panels --- */
+
+.panel {
+  background: #fff;
+  border: 1px solid var(--edge);
+  border-radius: 1.15rem;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  box-shadow: 0 1px 2px rgba(13, 21, 32, 0.04),
+    0 12px 28px -18px rgba(13, 21, 32, 0.22);
+}
+
+.panelTight {
+  padding: 1.25rem 1.35rem;
+}
+
+/* Centred single-column panel for the auth screens. */
+.authWrap {
+  display: flex;
+  justify-content: center;
+  padding-top: clamp(1rem, 4vw, 3rem);
+}
+
+.authPanel {
+  width: 100%;
+  max-width: 26rem;
+}
+
+/* ---------------------------------------------------------------- form --- */
+
+.form {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  font: inherit;
+  font-size: 0.94rem;
+  color: var(--ink);
+  background: #fbfcfe;
+  border: 1px solid var(--edge);
+  border-radius: 0.7rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease),
+    background 0.2s var(--ease);
+}
+
+.input::placeholder {
+  color: #9aa8b8;
+}
+
+.input:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.16);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1.1rem;
+}
+
+/* -------------------------------------------------------------- buttons --- */
+
+.btn {
+  --lift: 0px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.75rem 1.4rem;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transform: translateY(var(--lift));
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease),
+    background 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  --lift: 0px;
+}
+
+.btnPrimary {
+  background: linear-gradient(180deg, #3d7bf5 0%, #2f6fed 100%);
+  color: #fff;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset,
+    0 8px 18px -8px rgba(47, 111, 237, 0.65);
+}
+
+.btnPrimary:hover:not(:disabled) {
+  --lift: -2px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset,
+    0 16px 28px -10px rgba(47, 111, 237, 0.7);
+}
+
+.btnGhost {
+  background: #fff;
+  color: var(--ink);
+  border-color: var(--edge);
+}
+
+.btnGhost:hover:not(:disabled) {
+  --lift: -2px;
+  border-color: rgba(13, 21, 32, 0.2);
+}
+
+.btnDanger {
+  background: #fff;
+  color: var(--danger);
+  border-color: rgba(192, 57, 47, 0.28);
+}
+
+.btnDanger:hover:not(:disabled) {
+  background: #fdf4f3;
+}
+
+.btnSmall {
+  padding: 0.5rem 0.95rem;
+  font-size: 0.82rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+/* -------------------------------------------------------------- notices --- */
+
+.notice {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border-radius: 0.7rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.noticeOk {
+  background: #eefaf2;
+  color: #1c6b40;
+  border: 1px solid rgba(28, 107, 64, 0.2);
+}
+
+.noticeBad {
+  background: #fdf3f2;
+  color: #a3342b;
+  border: 1px solid rgba(163, 52, 43, 0.2);
+}
+
+.hint {
+  margin: 1.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.hint a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hint a:hover {
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------------- grid --- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 1.15rem;
+}
+
+.itemCard {
+  background: #fff;
+  border: 1px solid var(--edge);
+  border-radius: 1.05rem;
+  padding: 1.15rem 1.25rem 1.25rem;
+  box-shadow: 0 1px 2px rgba(13, 21, 32, 0.04),
+    0 10px 24px -18px rgba(13, 21, 32, 0.2);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+
+.itemCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 2px 4px rgba(13, 21, 32, 0.06),
+    0 18px 34px -18px rgba(13, 21, 32, 0.3);
+}
+
+.itemName {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.itemMeta {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.itemRows {
+  margin: 0.95rem 0 0;
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.87rem;
+  color: var(--muted);
+}
+
+.itemRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.15rem;
+  padding-top: 0.95rem;
+  border-top: 1px solid var(--edge);
+}
+
+/* -------------------------------------------------------------- status --- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.badgeOk {
+  background: #eefaf2;
+  color: #1c6b40;
+}
+
+.badgeWait {
+  background: #fff6e6;
+  color: #96601a;
+}
+
+.badgeOff {
+  background: #f1f4f8;
+  color: #5b6b7f;
+}
+
+/* --------------------------------------------------------------- empty --- */
+
+.empty {
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  border: 1px dashed var(--edge);
+  border-radius: 1.15rem;
+  background: #fff;
+  color: var(--muted);
+}
+
+.emptyTitle {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.loading {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------- gallery --- */
+
+.galleryBlock {
+  margin-top: 2.75rem;
+}
+
+.galleryHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.galleryTitle {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.galleryRegion {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.85rem;
+}
+
+.shot {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 0.9rem;
+  background: #e7edf4;
+  box-shadow: 0 1px 2px rgba(13, 21, 32, 0.06),
+    0 12px 26px -18px rgba(13, 21, 32, 0.35);
+}
+
+.shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s var(--ease);
+}
+
+.shot:hover img {
+  transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .itemCard,
+  .shot img,
+  .btn {
+    transition: none;
+    transform: none;
+  }
+}

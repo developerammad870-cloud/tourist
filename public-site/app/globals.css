@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+/**
+ * Global base only.
+ *
+ * Everything else that used to live here — the sidebar, `.main-content`, and
+ * the per-page rules for the old hotels/places/bookings/users screens — was
+ * deleted when the app was split into a public site and a CMS. Those rules
+ * were global, so they reached every page whether it wanted them or not.
+ *
+ * Chrome and page styles now live in CSS modules next to the components that
+ * use them:
+ *   app/components/public/public.module.css  — navbar, footer
+ *   app/components/public/pages.module.css   — public page layouts
+ *   app/components/admin/admin.module.css    — CMS sidebar, tables
+ *   app/components/ui/ui.module.css          — shared forms, cards, badges
+ *   app/components/home/Home.module.css      — the animated home page
+ */
+
+:root {
+  --background: #faf8f5;
+  --foreground: #16191c;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Anything focused by keyboard gets a visible ring, including custom controls. */
+:focus-visible {
+  outline: 2px solid #0e5b55;
+  outline-offset: 2px;
+}

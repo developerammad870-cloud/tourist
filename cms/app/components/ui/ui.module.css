@@ -1,0 +1,498 @@
+/*
+ * Shared UI primitives for the inner pages (login, orders, users, bookings,
+ * places, sign-up).
+ *
+ * Every surface here is glass over the ambient light defined in globals.css:
+ * a translucent fill, a hairline border, a bright inner top edge and a soft
+ * shadow. Three rules keep that from turning into mud:
+ *
+ *   1. Glass needs something behind it. These panels are transparent enough to
+ *      pick up the blue and violet pools in the page background — that colour
+ *      shift across a surface is what reads as depth.
+ *   2. Borders do the separating, not fills. On a dark ground a heavier fill
+ *      just looks like a lighter rectangle; a 1px lit edge looks like an edge.
+ *   3. Lift on hover is small — a few pixels and a brighter border. Anything
+ *      more and a table of rows starts to bounce.
+ *
+ * Tokens come from :root in globals.css so the whole app retints from there.
+ */
+
+.page {
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 3vw, 2.5rem) 0 4rem;
+  color: var(--ink);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* ---------------------------------------------------------------- head --- */
+
+.head {
+  margin-bottom: 2rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--honey);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  /* Ink deepening into caramel: on cream a flat black heading looks stamped
+     on, and this one looks like it belongs to the light around it. */
+  background: linear-gradient(100deg, var(--ink) 0%, #6b431d 55%, var(--toffee) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lede {
+  margin: 0.75rem 0 0;
+  max-width: 52ch;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.headRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+/* --------------------------------------------------------------- panels --- */
+
+/* The base sheet of glass. Everything else is this plus a variation. */
+.panel {
+  position: relative;
+  background: var(--glass);
+  border: 1px solid var(--glass-brd);
+  border-radius: var(--r-lg);
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: var(--glass-inner), var(--shadow-panel);
+}
+
+.panelTight {
+  padding: 1.25rem 1.35rem;
+}
+
+/* Centred single-column panel for the auth screens. */
+.authWrap {
+  display: flex;
+  justify-content: center;
+  padding-top: clamp(1rem, 4vw, 3rem);
+}
+
+.authPanel {
+  width: 100%;
+  max-width: 26rem;
+}
+
+/* ---------------------------------------------------------------- form --- */
+
+.form {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.01em;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  font: inherit;
+  font-size: 0.94rem;
+  color: var(--ink);
+  /* Inputs read as recesses, not raised panels: the fill is darker than the
+     glass around them and the inner shadow sits at the top. */
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--glass-brd);
+  border-radius: var(--r-sm);
+  box-shadow: inset 0 1px 2px rgba(90, 58, 25, 0.1);
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease),
+    background 0.2s var(--ease);
+}
+
+.input::placeholder {
+  color: var(--faint);
+}
+
+.input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--glass-brd-lit);
+  box-shadow: inset 0 1px 2px rgba(90, 58, 25, 0.1),
+    0 0 0 3px rgba(217, 160, 94, 0.22), var(--glow-caramel);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1.1rem;
+}
+
+/* -------------------------------------------------------------- buttons --- */
+
+.btn {
+  --lift: 0px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.75rem 1.4rem;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transform: translateY(var(--lift));
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease),
+    background 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  --lift: 0px;
+}
+
+/*
+ * Blue → violet, with the glow *under* the button rather than around it: a
+ * halo on all four sides reads as a blur, a pool beneath reads as a light
+ * source sitting above a surface. The inner top highlight gives the 3D edge.
+ */
+.btnPrimary {
+  background: linear-gradient(135deg, #f0b46e 0%, #c4823d 55%, #a86a32 100%);
+  color: var(--ink);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0.6rem 1.4rem -0.5rem rgba(160, 100, 44, 0.75), var(--glow-toffee);
+}
+
+.btnPrimary:hover:not(:disabled) {
+  --lift: -2px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 1.1rem 2rem -0.6rem rgba(160, 100, 44, 0.8),
+    0 0 3rem -0.4rem rgba(168, 106, 50, 0.75);
+}
+
+.btnGhost {
+  background: var(--glass);
+  color: var(--ink);
+  border-color: var(--glass-brd);
+  backdrop-filter: blur(12px);
+}
+
+.btnGhost:hover:not(:disabled) {
+  --lift: -2px;
+  background: var(--glass-strong);
+  border-color: var(--glass-brd-lit);
+  box-shadow: var(--glow-caramel);
+}
+
+.btnDanger {
+  background: rgba(248, 113, 113, 0.1);
+  color: #a3342b;
+  border-color: rgba(248, 113, 113, 0.32);
+}
+
+.btnDanger:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.18);
+  box-shadow: 0 0 2rem -0.5rem rgba(248, 113, 113, 0.5);
+}
+
+.btnSmall {
+  padding: 0.5rem 0.95rem;
+  font-size: 0.82rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+/* -------------------------------------------------------------- notices --- */
+
+.notice {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border-radius: 0.7rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.noticeOk {
+  background: rgba(52, 211, 153, 0.12);
+  color: #1c7a4d;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.noticeBad {
+  background: rgba(248, 113, 113, 0.12);
+  color: #a3342b;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.hint {
+  margin: 1.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.hint a {
+  color: var(--honey);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hint a:hover {
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------------- grid --- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 1.15rem;
+}
+
+/*
+ * The workhorse card. `::before` carries a gradient hairline that only lights
+ * up on hover — painting the border itself with a gradient would mean
+ * re-drawing the border-image on every frame, and this way the lift is one
+ * transform and one opacity, both compositor-only.
+ */
+.itemCard {
+  position: relative;
+  /* No backdrop-filter: a grid of these means one compositing pass each, and
+     against the page's soft gradient a slightly stronger fill is
+     indistinguishable. The big panels keep theirs — there is only ever one. */
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-brd);
+  border-radius: var(--r-md);
+  padding: 1.15rem 1.25rem 1.25rem;
+  box-shadow: var(--glass-inner), var(--shadow-panel);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease),
+    background 0.3s var(--ease);
+}
+
+.itemCard::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--caramel), var(--toffee) 55%, var(--honey));
+  /* Masks the fill out of the middle, leaving only the 1px ring. */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+  pointer-events: none;
+}
+
+.itemCard:hover {
+  transform: translateY(-4px);
+  background: var(--glass-strong);
+  box-shadow: var(--glass-inner), 0 1px 2px rgba(90, 58, 25, 0.16),
+    0 2.2rem 3.5rem -1.5rem rgba(90, 58, 25, 0.32), var(--glow-caramel);
+}
+
+.itemCard:hover::before {
+  opacity: 0.9;
+}
+
+.itemName {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.itemMeta {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.itemRows {
+  margin: 0.95rem 0 0;
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.87rem;
+  color: var(--muted);
+}
+
+.itemRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.15rem;
+  padding-top: 0.95rem;
+  border-top: 1px solid var(--glass-brd);
+}
+
+/* -------------------------------------------------------------- status --- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Status badges glow faintly in their own colour — enough to pick out of a
+   grid at a glance, not enough to compete with the primary action. */
+.badgeOk {
+  background: rgba(52, 160, 110, 0.16);
+  color: #14603c;
+  border: 1px solid rgba(52, 160, 110, 0.35);
+  box-shadow: 0 0 1.2rem -0.4rem rgba(52, 211, 153, 0.7);
+}
+
+.badgeWait {
+  background: rgba(214, 158, 46, 0.18);
+  color: #7a5410;
+  border: 1px solid rgba(214, 158, 46, 0.38);
+  box-shadow: 0 0 1.2rem -0.4rem rgba(251, 191, 36, 0.6);
+}
+
+.badgeOff {
+  background: rgba(122, 82, 42, 0.1);
+  color: var(--muted);
+  border: 1px solid rgba(122, 82, 42, 0.22);
+}
+
+/* --------------------------------------------------------------- empty --- */
+
+.empty {
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  border: 1px dashed var(--glass-brd);
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  color: var(--muted);
+}
+
+.emptyTitle {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.loading {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------- gallery --- */
+
+.galleryBlock {
+  margin-top: 2.75rem;
+}
+
+.galleryHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.galleryTitle {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.galleryRegion {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.85rem;
+}
+
+.shot {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-brd);
+  box-shadow: var(--shadow-panel);
+  transition: box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+
+.shot:hover {
+  border-color: var(--glass-brd-lit);
+  box-shadow: var(--shadow-panel), var(--glow-caramel);
+}
+
+.shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s var(--ease);
+}
+
+.shot:hover img {
+  transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .itemCard,
+  .shot img,
+  .btn {
+    transition: none;
+    transform: none;
+  }
+}
