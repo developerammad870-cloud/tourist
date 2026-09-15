@@ -127,7 +127,7 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stro
   --line-petrol-grid:0;
 }
 .hero{background-blend-mode:normal}
-.hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;padding-block:36px 32px}
+.hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;padding-block:26px 32px}
 .hero .eyebrow{color:var(--brass-hi)}
 .hero h1{margin-block:10px 16px}
 .hero h1 .calli{display:block;font-size:clamp(30px,4.2vw,52px);line-height:1.55;color:var(--brass-hi);white-space:nowrap}
@@ -269,6 +269,13 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stro
 .foot-addr{display:flex;align-items:center;gap:8px}
 .foot-addr .i{width:18px;height:18px;color:var(--brass-hi)}
 @media (max-width: 640px){ .strip-loc{display:none} }
+.hero-top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.loc-badge{display:inline-flex;align-items:center;gap:8px;padding-block:6px;padding-inline:10px 15px;border:1px solid var(--brass-hi);border-radius:999px;background:color-mix(in srgb, var(--brass-hi) 14%, transparent);color:var(--on-petrol);font-size:15px;font-weight:600;text-decoration:none;transition:background .2s,color .2s}
+.loc-badge .i{width:18px;height:18px;color:var(--brass-hi);transition:color .2s}
+.loc-badge:hover{background:var(--brass-hi);color:var(--on-brass)}
+.loc-badge:hover .i{color:var(--on-brass)}
+.motion .loc-badge .i{animation:pin-drop .9s cubic-bezier(.34,1.56,.64,1) .6s both}
+@keyframes pin-drop{from{transform:translateY(-12px);opacity:0}}
 
 /* 3D tanker showcase */
 .showcase{background:radial-gradient(ellipse at 50% 75%, var(--petrol-2), var(--petrol) 65%);color:var(--on-petrol)}
@@ -461,10 +468,16 @@ svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stro
       <div class="wrap">
         <div class="hero-grid">
           <div>
-            <p class="eyebrow">
-              <span class="en">Sewage suction · Septic tank emptying</span>
-              <span class="ar">شفط مياه المجاري · تفريغ البيارات</span>
-            </p>
+            <div class="hero-top">
+              <p class="eyebrow">
+                <span class="en">Sewage suction · Septic tank emptying</span>
+                <span class="ar">شفط مياه المجاري · تفريغ البيارات</span>
+              </p>
+              <a class="loc-badge" href="https://www.google.com/maps/search/?api=1&amp;query=Barka%2C%20Oman" target="_blank" rel="noopener">
+                <svg class="i" aria-hidden="true"><use href="#i-pin"/></svg>
+                <span class="en">Barka, Muscat, Oman</span><span class="ar">بركاء، مسقط، سلطنة عُمان</span>
+              </a>
+            </div>
             <h1>
               <span class="calli" lang="ar" dir="rtl">الشفط میاں مجاری</span>
               <span class="name-en">Sewerage Water Tank</span>
@@ -1003,6 +1016,7 @@ const CONFIG = {
     });
 
     reveal(".hero .eyebrow");
+    reveal(".loc-badge", null, 80);
     words(".hero h1 .calli", 120);
     words(".hero h1 .name-en", 520);
     reveal(".hero .lede", null, 700);
