@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Sewerage Water Tank — 24/7 sewage suction, septic tank emptying and grease trap cleaning.">
+<style>body{margin:0}</style>
+<script>
+  // Enable scroll/entrance motion only when the visitor allows it; fall back to static if the main script never runs.
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: no-preference)").matches && "IntersectionObserver" in window) {
+    document.documentElement.classList.add("motion");
+    setTimeout(function () { if (!window.__rv) document.documentElement.classList.remove("motion"); }, 4000);
+  }
+</script>
+<title>Sewerage Water Tank</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lemonada:wght@600;700&family=IBM+Plex+Mono:wght@500&family=Marcellus&family=Noto+Naskh+Arabic:wght@400;600&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#EEF2F1; --surface:#FFFFFF; --field:#F6F8F8;
+  --ink:#0F2A31; --ink-2:#4A6067; --rule:#C9D5D4;
+  --brass:#946618; --brass-hi:#D8AD5C; --on-brass:#1A1305;
+  --petrol:#0E3440; --petrol-2:#15485A; --petrol-3:#0A2830;
+  --on-petrol:#E9F0EE; --on-petrol-2:#A9C0C2; --line-petrol:rgba(233,240,238,.16);
+  --teal:#2A8783;
+  --shadow:0 22px 48px -28px rgba(8,34,42,.5);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0B191E; --surface:#11252C; --field:#0D1F25;
+    --ink:#E3EBE9; --ink-2:#9BB0B2; --rule:#23404A;
+    --brass:#D6A857; --brass-hi:#E0B868; --on-brass:#1A1305;
+    --petrol:#0F2F39; --petrol-2:#17495A; --petrol-3:#081418;
+    --on-petrol:#E9F0EE; --on-petrol-2:#A3BBBD; --line-petrol:rgba(233,240,238,.14);
+    --teal:#4DB0A9;
+    --shadow:0 22px 48px -28px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0B191E; --surface:#11252C; --field:#0D1F25;
+  --ink:#E3EBE9; --ink-2:#9BB0B2; --rule:#23404A;
+  --brass:#D6A857; --brass-hi:#E0B868; --on-brass:#1A1305;
+  --petrol:#0F2F39; --petrol-2:#17495A; --petrol-3:#081418;
+  --on-petrol:#E9F0EE; --on-petrol-2:#A3BBBD; --line-petrol:rgba(233,240,238,.14);
+  --teal:#4DB0A9;
+  --shadow:0 22px 48px -28px rgba(0,0,0,.8);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:90px}
+@media (prefers-reduced-motion: no-preference){ html{scroll-behavior:smooth} }
+body{background:var(--ground);color:var(--ink)}
+
+.site{
+  --f-body:"Public Sans", system-ui, "Segoe UI", sans-serif;
+  --f-display:"Marcellus", "Times New Roman", Georgia, serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+  font-family:var(--f-body); font-size:17px; line-height:1.65; color:var(--ink); background:var(--ground);
+}
+.site[data-lang="ar"]{
+  --f-body:"Noto Naskh Arabic", Tahoma, "Segoe UI", sans-serif;
+  --f-display:"Amiri", "Noto Naskh Arabic", serif;
+  font-size:18px;
+}
+.site[data-lang="en"] .ar{display:none !important}
+.site[data-lang="ar"] .en{display:none !important}
+
+a{color:inherit}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:400}
+p{margin:0}
+.wrap{max-width:1180px;margin-inline:auto;padding-inline:clamp(16px,4vw,40px)}
+.calli{font-family:"Lemonada","Amiri",serif;font-weight:700}
+.ltr{direction:ltr;unicode-bidi:isolate}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+:focus-visible{outline:2px solid var(--brass-hi);outline-offset:3px;border-radius:2px}
+
+.eyebrow{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass)}
+.site[data-lang="ar"] .eyebrow{font-family:var(--f-body);letter-spacing:0;font-size:15px;font-weight:600}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:3px;font-weight:600;font-size:16px;text-decoration:none;border:1px solid transparent;cursor:pointer;font-family:var(--f-body);transition:background .2s,color .2s,border-color .2s,transform .2s}
+.btn:hover{transform:translateY(-1px)}
+.btn-brass{background:var(--brass-hi);color:var(--on-brass)}
+.btn-brass:hover{background:var(--on-petrol)}
+.btn-ghost{border-color:var(--line-petrol);color:var(--on-petrol);background:transparent}
+.btn-ghost:hover{border-color:var(--brass-hi);color:var(--brass-hi)}
+
+/* Top strip */
+.strip{background:var(--petrol-3);color:var(--on-petrol-2);font-size:14px}
+.strip .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:8px;flex-wrap:wrap}
+.strip-line{display:flex;align-items:center;gap:10px}
+.pulse{width:8px;height:8px;border-radius:50%;background:var(--brass-hi);box-shadow:0 0 0 0 rgba(216,173,92,.6)}
+@media (prefers-reduced-motion: no-preference){ .pulse{animation:pulse 2.2s infinite} }
+@keyframes pulse{70%{box-shadow:0 0 0 9px rgba(216,173,92,0)}100%{box-shadow:0 0 0 0 rgba(216,173,92,0)}}
+.strip a{color:var(--on-petrol);text-decoration:none;font-weight:600}
+.lang-btn{background:transparent;border:1px solid var(--line-petrol);color:var(--on-petrol);padding:3px 14px;border-radius:2px;cursor:pointer;font-size:14px;font-family:"Noto Naskh Arabic","Public Sans",sans-serif}
+.lang-btn:hover{border-color:var(--brass-hi);color:var(--brass-hi)}
+.strip-right{display:flex;align-items:center;gap:16px}
+
+/* Header */
+.head{position:sticky;top:0;z-index:20;background:color-mix(in srgb, var(--ground) 92%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.head .wrap{display:flex;align-items:center;gap:28px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink)}
+.brand svg{width:44px;height:44px;flex:none}
+.brand-txt{display:flex;flex-direction:column;line-height:1.15}
+.brand-en{font-family:"Marcellus",Georgia,serif;font-size:17px;letter-spacing:.12em;text-transform:uppercase}
+.brand-ar{font-family:"Lemonada","Amiri",serif;font-size:15px;color:var(--brass);font-weight:600}
+.nav{display:flex;gap:24px;margin-inline-start:auto}
+.nav a{text-decoration:none;font-size:15px;color:var(--ink-2);font-weight:500;padding-block:6px;border-bottom:1px solid transparent}
+.nav a:hover{color:var(--ink);border-bottom-color:var(--brass)}
+.head .call{padding:10px 18px;font-size:15px;background:var(--petrol);color:var(--on-petrol)}
+.head .call:hover{background:var(--brass-hi);color:var(--on-brass)}
+
+/* Hero */
+.hero{
+  background:
+    linear-gradient(var(--line-petrol) 1px, transparent 1px) 0 0/48px 48px,
+    linear-gradient(90deg, var(--line-petrol) 1px, transparent 1px) 0 0/48px 48px,
+    radial-gradient(ellipse at 75% 40%, var(--petrol-2), var(--petrol) 70%);
+  color:var(--on-petrol);
+  --line-petrol-grid:0;
+}
+.hero{background-blend-mode:normal}
+.hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;padding-block:36px 32px}
+.hero .eyebrow{color:var(--brass-hi)}
+.hero h1{margin-block:10px 16px}
+.hero h1 .calli{display:block;font-size:clamp(30px,4.2vw,52px);line-height:1.55;color:var(--brass-hi);white-space:nowrap}
+.hero h1 .name-en{display:block;font-family:"Marcellus",Georgia,serif;font-size:clamp(20px,2.3vw,30px);letter-spacing:.12em;text-transform:uppercase;line-height:1.2;padding-block:10px 0;margin-block-start:6px;position:relative}
+.hero h1 .name-en::before{content:"";position:absolute;inset-inline:0;top:0;height:1px;background:var(--brass-hi);transform-origin:right;transition:transform 1.2s var(--ease) var(--d,0ms)}
+.lede{color:var(--on-petrol-2);max-width:54ch;font-size:18px}
+.site[data-lang="ar"] .lede{font-size:19px;line-height:1.9}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-block-start:22px}
+
+.tanker{width:100%;height:auto;direction:ltr;display:block}
+.tanker .tk-en{fill:#0E3440;font:15px "Marcellus",Georgia,serif;letter-spacing:.12em}
+.tanker .tk-ar{fill:#E0B868;font:700 22px "Lemonada","Amiri",serif}
+.tanker .tk-sub{fill:#0E3440;font:600 11px "Public Sans",sans-serif;letter-spacing:.2em}
+@media (prefers-reduced-motion: no-preference){
+  .tanker .beacon{animation:beacon 1.6s ease-in-out infinite}
+}
+@keyframes beacon{50%{opacity:.35}}
+
+.plate{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line-petrol)}
+.plate > div{padding:22px 20px 26px;border-inline-start:1px solid var(--line-petrol)}
+.plate > div:first-child{border-inline-start:0;padding-inline-start:0}
+.plate b{display:block;font-family:"Marcellus",Georgia,serif;font-weight:400;font-size:30px;color:var(--on-petrol);line-height:1.2;font-variant-numeric:tabular-nums}
+.plate span{font-size:14.5px;color:var(--on-petrol-2)}
+
+/* Sections */
+.sec{padding-block:88px}
+.sec-head{display:grid;gap:14px;max-width:62ch;margin-block-end:44px}
+.sec-head h2{font-family:var(--f-display);font-size:clamp(32px,4.2vw,46px);line-height:1.15;color:var(--ink)}
+.site[data-lang="ar"] .sec-head h2{font-weight:700;line-height:1.4}
+.sec-head p{color:var(--ink-2)}
+
+/* Services */
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.svc{position:relative;background:var(--ground);padding:30px 28px 34px;display:grid;gap:12px;align-content:start;transition:background .25s,transform .4s var(--ease),box-shadow .4s var(--ease)}
+.svc:hover{background:var(--surface);transform:translateY(-6px);box-shadow:var(--shadow);z-index:1}
+.svc .ico{width:48px;height:48px;display:grid;place-items:center;border:1px solid var(--rule);border-radius:50%;color:var(--brass);transition:background .25s,color .25s,border-color .25s,transform .4s var(--ease)}
+.svc:hover .ico{background:var(--petrol);color:var(--brass-hi);border-color:var(--petrol);transform:scale(1.1) rotate(-8deg)}
+.svc h3{font-family:var(--f-display);font-size:23px;line-height:1.25}
+.site[data-lang="ar"] .svc h3{font-weight:700}
+.svc p{color:var(--ink-2);font-size:16px}
+
+/* Fleet */
+.fleet-bg{background:var(--surface);border-block:1px solid var(--rule)}
+.fleet{display:grid;border-top:2px solid var(--ink)}
+.fleet-row{display:grid;grid-template-columns:170px 1fr 150px 1.15fr;gap:28px;align-items:center;padding-block:24px;border-bottom:1px solid var(--rule)}
+.fleet-row.th{padding-block:12px;font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.site[data-lang="ar"] .fleet-row.th{font-family:var(--f-body);letter-spacing:0;font-size:14px}
+.gal{font-family:"Marcellus",Georgia,serif;font-size:32px;line-height:1;font-variant-numeric:tabular-nums}
+.gal small{display:block;font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;color:var(--brass);margin-top:6px;text-transform:uppercase}
+.bar{height:18px;background:var(--field);border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--petrol),var(--teal));border-radius:10px;border-inline-end:4px solid var(--brass-hi)}
+.site[data-lang="ar"] .bar i{background:linear-gradient(270deg,var(--petrol),var(--teal))}
+.litre{font-family:var(--f-mono);font-size:15px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.best{color:var(--ink-2);font-size:16px}
+.fleet-note{margin-top:16px;font-size:14px;color:var(--ink-2)}
+
+/* Process */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:28px;position:relative}
+.steps::before{content:"";position:absolute;inset-inline:26px;top:26px;border-top:2px dashed var(--rule)}
+.steps li{position:relative;display:grid;gap:10px;align-content:start}
+.num{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:var(--petrol);color:var(--brass-hi);font-family:"Marcellus",Georgia,serif;font-size:24px;box-shadow:0 0 0 6px var(--ground);margin-bottom:8px;transition:transform .7s cubic-bezier(.34,1.56,.64,1) calc(var(--d,0ms) + 150ms),background .3s,color .3s}
+.steps li:hover .num{background:var(--brass-hi);color:var(--on-brass)}
+.steps h3{font-family:var(--f-display);font-size:22px;line-height:1.25}
+.site[data-lang="ar"] .steps h3{font-weight:700}
+.steps p{color:var(--ink-2);font-size:16px}
+
+/* Clients & why */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+.chips{display:flex;flex-wrap:wrap;gap:10px;list-style:none;margin:0;padding:0}
+.chips li{padding:9px 16px;border:1px solid var(--rule);border-radius:2px;background:var(--surface);font-size:15.5px;transition:border-color .25s,color .25s,transform .3s var(--ease)}
+.chips li:hover{border-color:var(--brass);color:var(--brass);transform:translateY(-2px)}
+.why{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.why li{display:grid;grid-template-columns:34px 1fr;gap:14px;padding-block:18px;border-top:1px solid var(--rule)}
+.why li:last-child{border-bottom:1px solid var(--rule)}
+.why .i{color:var(--brass);margin-top:4px;transition:transform .35s var(--ease)}
+.why li:hover .i{transform:scale(1.2)}
+.why h3{font-family:var(--f-display);font-size:21px;line-height:1.3}
+.site[data-lang="ar"] .why h3{font-weight:700}
+.why p{color:var(--ink-2);font-size:16px}
+.sub-h{font-family:var(--f-display);font-size:30px;margin-block:10px 24px;line-height:1.2}
+.site[data-lang="ar"] .sub-h{font-weight:700}
+
+/* FAQ */
+.faq{max-width:860px;border-top:2px solid var(--ink)}
+.faq details{border-bottom:1px solid var(--rule)}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:20px;align-items:center;padding-block:22px;font-family:var(--f-display);font-size:21px;line-height:1.35}
+.site[data-lang="ar"] .faq summary{font-weight:700}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--f-mono);font-size:22px;color:var(--brass);transition:transform .25s;flex:none}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding-block:0 24px;color:var(--ink-2);max-width:68ch}
+
+/* Contact */
+.contact{background:var(--petrol);color:var(--on-petrol)}
+.contact .eyebrow{color:var(--brass-hi)}
+.contact .sec-head h2{color:var(--on-petrol)}
+.contact .sec-head p{color:var(--on-petrol-2)}
+.contact-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:56px;align-items:start}
+.lines{display:grid;gap:0}
+.lines a,.lines div{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:center;padding-block:18px;border-top:1px solid var(--line-petrol);text-decoration:none;color:var(--on-petrol)}
+.lines > :last-child{border-bottom:1px solid var(--line-petrol)}
+.lines .i{width:26px;height:26px;color:var(--brass-hi);transition:transform .3s var(--ease)}
+.lines a:hover .i{transform:translateX(4px)}
+[dir="rtl"] .lines a:hover .i{transform:translateX(-4px)}
+.lines small{display:block;color:var(--on-petrol-2);font-size:14px}
+.lines strong{font-weight:500;font-size:18px}
+.lines .big{font-family:"Marcellus",Georgia,serif;font-size:clamp(28px,3.4vw,38px);font-weight:400;letter-spacing:.03em;color:var(--brass-hi)}
+.lines a:hover strong{color:var(--brass-hi)}
+
+.form{background:var(--surface);color:var(--ink);padding:34px;border-radius:4px;box-shadow:var(--shadow);display:grid;gap:18px;grid-template-columns:1fr 1fr;border-top:4px solid var(--brass-hi)}
+.form h3{grid-column:1/-1;font-family:var(--f-display);font-size:26px}
+.site[data-lang="ar"] .form h3{font-weight:700}
+.field{display:grid;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font-size:14px;font-weight:600;color:var(--ink-2)}
+.field input,.field select,.field textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--field);border:1px solid var(--rule);border-radius:3px;padding:11px 13px}
+.field textarea{min-height:88px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brass);box-shadow:0 0 0 3px color-mix(in srgb, var(--brass-hi) 30%, transparent)}
+.form .btn{grid-column:1/-1;justify-content:center;background:var(--petrol);color:var(--on-petrol);padding-block:15px}
+.form .btn:hover{background:var(--brass-hi);color:var(--on-brass)}
+.form-note{grid-column:1/-1;font-size:14px;color:var(--ink-2);margin-top:-6px}
+.form-status{grid-column:1/-1;font-size:15px;color:var(--ink)}
+.form-status a{color:var(--brass);font-weight:600}
+
+/* Footer */
+.foot{background:var(--petrol-3);color:var(--on-petrol-2);font-size:14.5px}
+.foot .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;padding-block:28px}
+.foot .brand{color:var(--on-petrol)}
+.foot .brand-ar{color:var(--brass-hi)}
+
+/* Mobile action bar */
+.mbar{display:none}
+
+/* Motion — hidden start states apply only under html.motion (set in <head>), so the page stays fully visible without JS */
+:root{--ease:cubic-bezier(.22,1,.36,1)}
+.head{transition:box-shadow .3s}
+.head.scrolled{box-shadow:0 14px 32px -22px rgba(8,34,42,.55)}
+
+.motion .rv:not(.in){opacity:0;transform:translateY(30px)}
+.motion .rv[data-rv="start"]:not(.in){transform:translateX(-44px)}
+.motion [dir="rtl"] .rv[data-rv="start"]:not(.in){transform:translateX(44px)}
+.motion .rv[data-rv="zoom"]:not(.in){transform:scale(.93)}
+.motion .rv:not(.done){transition:opacity .9s var(--ease) var(--d,0ms),transform .9s var(--ease) var(--d,0ms)}
+
+.motion [data-words] .w{display:inline-block;transition:opacity .8s var(--ease),transform .8s var(--ease),filter .8s var(--ease);transition-delay:calc(var(--d,0ms) + var(--i,0) * 75ms)}
+.motion [data-words]:not(.in) .w{opacity:0;transform:translateY(.55em);filter:blur(6px)}
+.motion .hero h1 .name-en:not(.in)::before{transform:scaleX(0)}
+
+.bar i{transform-origin:left;transition:transform 1.4s var(--ease) calc(var(--d,0ms) + 250ms)}
+[dir="rtl"] .bar i{transform-origin:right}
+.motion .fleet-row:not(.in) .bar i{transform:scaleX(0)}
+
+.steps::before{transform-origin:left;transition:transform 1.8s var(--ease) .1s}
+[dir="rtl"] .steps::before{transform-origin:right}
+.motion .steps:not(.in)::before{transform:scaleX(0)}
+.motion .steps li:not(.in) .num{transform:scale(.3)}
+
+.motion .hero .btn-brass{animation:ring 2.6s ease-out 3s infinite}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(216,173,92,.6)}75%,100%{box-shadow:0 0 0 16px rgba(216,173,92,0)}}
+.motion .mbar{animation:mbar-in .7s var(--ease) 1.2s both}
+@keyframes mbar-in{from{transform:translateY(100%)}}
+
+/* Truck drives in, wheels spin, hose drops into the manhole, then the body idles */
+.motion .tanker .drive{animation:tk-drive 1.8s var(--ease) .2s both}
+.motion .tanker .spin{animation:tk-spin 1.8s var(--ease) .2s both}
+.motion .tanker .bob{animation:tk-bob 2.8s ease-in-out 2.2s infinite}
+.motion .tanker .manhole{animation:tk-fade .5s ease-out 1.5s both}
+.motion .tanker .hose-line{stroke-dasharray:1;animation:tk-draw 1s ease-in-out 1.9s both}
+.motion .tanker .hose-rib{animation:tk-fade .4s ease-out 2.8s both}
+@keyframes tk-drive{from{transform:translateX(-170px);opacity:0}35%{opacity:1}to{transform:none;opacity:1}}
+@keyframes tk-spin{from{transform:rotate(-300deg)}to{transform:none}}
+@keyframes tk-bob{0%,100%{transform:none}50%{transform:translateY(-2.5px)}}
+@keyframes tk-draw{from{stroke-dashoffset:1;opacity:0}15%{opacity:1}to{stroke-dashoffset:0;opacity:1}}
+@keyframes tk-fade{from{opacity:0}}
+
+/* Scroll progress line under the header */
+@supports (animation-timeline: scroll()){
+  .motion .head::after{content:"";position:absolute;inset-inline:0;bottom:-1px;height:2px;background:var(--brass-hi);transform-origin:left;animation:progress linear both;animation-timeline:scroll(root)}
+  .motion [dir="rtl"] .head::after{transform-origin:right}
+  @keyframes progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+}
+/* Smooth FAQ open/close where supported */
+@supports selector(::details-content){
+  .motion .faq{interpolate-size:allow-keywords}
+  .motion .faq details::details-content{block-size:0;overflow:hidden;transition:block-size .45s var(--ease),content-visibility .45s allow-discrete}
+  .motion .faq details[open]::details-content{block-size:auto}
+}
+
+@media (max-width: 980px){
+  .nav{display:none}
+  .head .call{margin-inline-start:auto}
+  .hero-grid{grid-template-columns:1fr;gap:20px;padding-block:28px 24px}
+  .hero-grid > *{min-width:0}
+  .hero h1 .calli{white-space:normal;font-size:clamp(28px,9vw,46px)}
+  .plate{grid-template-columns:repeat(2,1fr)}
+  .plate > div:nth-child(3){border-inline-start:0;padding-inline-start:0}
+  .plate > div:nth-child(n+3){border-top:1px solid var(--line-petrol)}
+  .svc-grid{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:repeat(2,1fr);row-gap:40px}
+  .steps::before{display:none}
+  .two,.contact-grid{grid-template-columns:1fr;gap:48px}
+  .fleet-row{grid-template-columns:140px 1fr 130px}
+  .fleet-row .best{grid-column:1/-1;margin-top:-10px}
+  .fleet-row.th .best{display:none}
+}
+@media (max-width: 640px){
+  .site{padding-bottom:64px}
+  .sec{padding-block:64px}
+  .strip-line .en,.strip-line .ar{font-size:13px}
+  .head .call{display:none}
+  .brand svg{width:38px;height:38px}
+  .brand-en{font-size:14px}
+  .plate b{font-size:24px}
+  .plate > div{padding:16px 12px 18px}
+  .svc-grid{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+  .fleet-row{grid-template-columns:1fr 1fr;gap:12px 16px}
+  .fleet-row .bar{grid-column:1/-1;order:3}
+  .fleet-row .best{order:4;margin-top:0}
+  .fleet-row.th{display:none}
+  .litre{text-align:end}
+  .form{grid-template-columns:1fr;padding:24px}
+  .mbar{display:grid;grid-template-columns:1fr 1fr;position:fixed;inset-inline:0;bottom:0;z-index:30;background:var(--petrol-3);border-top:1px solid var(--line-petrol)}
+  .mbar a{display:flex;justify-content:center;align-items:center;gap:8px;padding:15px 8px;color:var(--on-petrol);text-decoration:none;font-weight:600}
+  .mbar a + a{background:var(--brass-hi);color:var(--on-brass)}
+}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important;animation:none !important}
+}
+</style>
+</head>
+<body>
+
+<div class="site" id="site" data-lang="en" dir="ltr">
+
+  <!-- Symbols reused across the page -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 3.5h3.6l1.9 4.8-2.3 1.5a11.5 11.5 0 0 0 6 6l1.5-2.3 4.8 1.9V19a2 2 0 0 1-2 2A17.5 17.5 0 0 1 3 5.5a2 2 0 0 1 2-2z"/></symbol>
+    <symbol id="i-wa" viewBox="0 0 24 24"><path d="M20.5 11.7a8.6 8.6 0 0 1-12.7 7.5L3.5 20.5l1.4-4.1a8.6 8.6 0 1 1 15.6-4.7z"/><path d="M9 8.3c-.4 2.9 3 6.9 6.6 6.8l.9-1.6-2-1-.9.8a4.8 4.8 0 0 1-2.4-2.4l.8-.9-1-2z"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3c3.6 4.3 6 7.7 6 10.7a6 6 0 0 1-12 0C6 10.7 8.4 7.3 12 3z"/><path d="M9 14.3a3 3 0 0 0 3 3"/></symbol>
+    <symbol id="i-tank" viewBox="0 0 24 24"><rect x="2.5" y="8" width="19" height="11" rx="5.5"/><path d="M10 8V5h4v3"/><path d="M5 14.5h14" opacity=".55"/></symbol>
+    <symbol id="i-grease" viewBox="0 0 24 24"><path d="M3 9h18l-2 10H5z"/><path d="M8 9V5.5M16 9V5.5"/><path d="M6.5 13h11"/></symbol>
+    <symbol id="i-manhole" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><path d="M8.5 12h7M12 8.5v7"/></symbol>
+    <symbol id="i-pump" viewBox="0 0 24 24"><circle cx="9" cy="13.5" r="5"/><path d="M14 13.5h7M18 10.5v6M9 8.5V4h6"/><path d="M7 13.5h4"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17v.3"/></symbol>
+    <symbol id="logo" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="var(--petrol)"/><circle cx="24" cy="24" r="18.5" fill="none" stroke="var(--brass-hi)" stroke-width="1.6"/><circle cx="24" cy="24" r="12" fill="none" stroke="var(--brass-hi)" stroke-width="1.2" opacity=".7"/><path d="M12.5 24h23M24 12.5v23M16 16l16 16M32 16L16 32" stroke="var(--brass-hi)" stroke-width="1" opacity=".45"/><path d="M24 15.5c3.2 3.8 5.3 6.8 5.3 9.3a5.3 5.3 0 0 1-10.6 0c0-2.5 2.1-5.5 5.3-9.3z" fill="var(--brass-hi)"/></symbol>
+  </svg>
+
+  <div class="strip">
+    <div class="wrap">
+      <div class="strip-line">
+        <span class="pulse" aria-hidden="true"></span>
+        <span class="en">24-hour emergency sewage line</span>
+        <span class="ar">خط طوارئ الصرف الصحي على مدار 24 ساعة</span>
+        <a data-tel href="tel:+96876368205"><span class="ltr" data-phone>+968 7636 8205</span></a>
+      </div>
+      <div class="strip-right">
+        <button class="lang-btn" id="langBtn" type="button" data-en="عربي" data-ar="English" aria-label="Switch language">عربي</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="head">
+    <div class="wrap">
+      <a class="brand" href="#top" aria-label="Sewerage Water Tank — home">
+        <svg aria-hidden="true"><use href="#logo"/></svg>
+        <span class="brand-txt">
+          <span class="brand-en">Sewerage Water Tank</span>
+          <span class="brand-ar" lang="ar" dir="rtl">الشفط میاں مجاری</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Main">
+        <a href="#services"><span class="en">Services</span><span class="ar">الخدمات</span></a>
+        <a href="#fleet"><span class="en">Tankers</span><span class="ar">الصهاريج</span></a>
+        <a href="#process"><span class="en">How it works</span><span class="ar">طريقة العمل</span></a>
+        <a href="#clients"><span class="en">Clients</span><span class="ar">عملاؤنا</span></a>
+        <a href="#faq"><span class="en">FAQ</span><span class="ar">الأسئلة</span></a>
+        <a href="#contact"><span class="en">Contact</span><span class="ar">تواصل معنا</span></a>
+      </nav>
+      <a class="btn call" data-tel href="tel:+96876368205">
+        <svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>
+        <span class="en">Call now</span><span class="ar">اتصل الآن</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-grid">
+          <div>
+            <p class="eyebrow">
+              <span class="en">Sewage suction · Septic tank emptying</span>
+              <span class="ar">شفط مياه المجاري · تفريغ البيارات</span>
+            </p>
+            <h1>
+              <span class="calli" lang="ar" dir="rtl">الشفط میاں مجاری</span>
+              <span class="name-en">Sewerage Water Tank</span>
+            </h1>
+            <p class="lede">
+              <span class="en">Vacuum-tanker suction for septic tanks, sewage pits, grease traps and blocked manholes. We pump it dry, rinse the site, and take every load to a licensed treatment plant — day or night.</span>
+              <span class="ar">شفط مياه المجاري بصهاريج الشفط للبيارات وخزانات الصرف ومصائد الشحوم وغرف التفتيش المسدودة. نفرّغ الخزان بالكامل، وننظّف الموقع، وننقل كل حمولة إلى محطة معالجة مرخّصة — ليلاً ونهاراً.</span>
+            </p>
+            <div class="hero-cta">
+              <a class="btn btn-brass" data-tel href="tel:+96876368205">
+                <svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>
+                <span class="en">Call now</span><span class="ar">اتصل الآن</span>
+              </a>
+              <a class="btn btn-ghost" data-wa href="https://wa.me/96878061190" target="_blank" rel="noopener">
+                <svg class="i" aria-hidden="true"><use href="#i-wa"/></svg>
+                <span class="en">WhatsApp us</span><span class="ar">راسلنا واتساب</span>
+              </a>
+            </div>
+          </div>
+
+          <svg class="tanker" viewBox="0 0 660 340" role="img" aria-labelledby="tkTitle">
+            <title id="tkTitle">Sewage suction tanker truck branded Sewerage Water Tank — الشفط میاں مجاری</title>
+            <defs>
+              <linearGradient id="gTank" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#FFFFFF"/><stop offset=".2" stop-color="#F2F5F4"/>
+                <stop offset=".6" stop-color="#D6DFDE"/><stop offset=".88" stop-color="#A9B7B7"/>
+                <stop offset="1" stop-color="#879798"/>
+              </linearGradient>
+              <linearGradient id="gCab" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#E7EDEC"/>
+                <stop offset="1" stop-color="#AFBDBD"/>
+              </linearGradient>
+              <linearGradient id="gBand" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#1A5468"/><stop offset=".5" stop-color="#0E3440"/>
+                <stop offset="1" stop-color="#082229"/>
+              </linearGradient>
+              <linearGradient id="gGlass" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#3C7285"/><stop offset="1" stop-color="#0A2530"/>
+              </linearGradient>
+              <linearGradient id="gSteel" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#6F7E80"/><stop offset=".45" stop-color="#C9D3D3"/>
+                <stop offset="1" stop-color="#5F6D6F"/>
+              </linearGradient>
+              <radialGradient id="gTire" cx=".45" cy=".4" r=".6">
+                <stop offset="0" stop-color="#3B4245"/><stop offset="1" stop-color="#0F1315"/>
+              </radialGradient>
+              <radialGradient id="gRim" cx=".4" cy=".35" r=".7">
+                <stop offset="0" stop-color="#F4F7F7"/><stop offset="1" stop-color="#7F8D8E"/>
+              </radialGradient>
+              <filter id="fBlur" x="-20%" y="-200%" width="140%" height="500%"><feGaussianBlur stdDeviation="6"/></filter>
+              <clipPath id="cArch"><rect x="0" y="0" width="660" height="268"/></clipPath>
+              <g id="wheel">
+                <circle r="32" fill="url(#gTire)"/>
+                <circle r="20" fill="url(#gRim)"/>
+                <circle r="13" fill="none" stroke="#5C6A6B" stroke-width="2.5" stroke-dasharray="2 4.8"/>
+                <circle r="6.5" fill="#4A575A"/>
+              </g>
+            </defs>
+
+            <g class="drive">
+            <!-- ground shadow -->
+            <ellipse cx="350" cy="302" rx="300" ry="9" fill="#000" opacity=".45" filter="url(#fBlur)"/>
+
+            <g class="bob">
+            <!-- chassis -->
+            <rect x="96" y="232" width="506" height="14" rx="3" fill="#1F2A2E"/>
+            <path d="M150 226h14v8h-14zM270 226h14v8h-14zM390 226h14v8h-14z" fill="#2A3438"/>
+
+            <!-- tank -->
+            <ellipse cx="112" cy="162" rx="22" ry="70" fill="url(#gTank)"/>
+            <rect x="110" y="92" width="322" height="140" rx="12" fill="url(#gTank)"/>
+            <rect x="120" y="99" width="300" height="7" rx="3.5" fill="#FFFFFF" opacity=".8"/>
+            <rect x="104" y="92" width="9" height="140" rx="3" fill="url(#gSteel)"/>
+            <rect x="424" y="92" width="9" height="140" rx="3" fill="url(#gSteel)"/>
+            <rect x="113" y="140" width="311" height="52" fill="url(#gBand)"/>
+            <rect x="113" y="135" width="311" height="3" fill="#D8AD5C"/>
+            <rect x="113" y="194" width="311" height="3" fill="#D8AD5C"/>
+            <text class="tk-en" x="268" y="125" text-anchor="middle">SEWERAGE WATER TANK</text>
+            <text class="tk-ar" x="268" y="173" text-anchor="middle" direction="rtl">الشفط میاں مجاری</text>
+            <text class="tk-sub" x="268" y="218" text-anchor="middle">24/7 SUCTION SERVICE</text>
+
+            <!-- manholes + rail on top -->
+            <path d="M150 78h260" stroke="#8D9C9D" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M160 78v14M280 78v14M400 78v14" stroke="#8D9C9D" stroke-width="2"/>
+            <g fill="url(#gSteel)">
+              <path d="M196 92q0-10 22-10t22 10z"/><path d="M316 92q0-10 22-10t22 10z"/>
+            </g>
+
+            <!-- rear valve + light -->
+            <rect x="80" y="196" width="22" height="12" rx="3" fill="url(#gSteel)"/>
+            <rect x="99" y="236" width="10" height="7" rx="1.5" fill="#D9534F"/>
+
+            <!-- vacuum pump -->
+            <rect x="433" y="126" width="30" height="110" rx="3" fill="#2A3438"/>
+            <rect x="437" y="176" width="22" height="48" rx="6" fill="#15485A"/>
+            <path d="M448 126V104h-28" fill="none" stroke="url(#gSteel)" stroke-width="6" stroke-linejoin="round"/>
+
+            <!-- cab -->
+            <path d="M462 246V104q0-16 16-16h100q14 0 19 12l11 50q4 10 4 22v74z" fill="url(#gCab)" stroke="#9AA8A9"/>
+            <path d="M486 102h62v48h-62q-6 0-6-6v-36q0-6 6-6z" fill="url(#gGlass)"/>
+            <path d="M560 100h26q6 0 8 6l10 44h-44z" fill="url(#gGlass)"/>
+            <path d="M492 104l20 0-26 40v-30z" fill="#FFFFFF" opacity=".22"/>
+            <path d="M478 158h78v76h-78z" fill="none" stroke="#B3C0C0"/>
+            <rect x="542" y="168" width="10" height="3" rx="1.5" fill="#6D7B7C"/>
+            <rect x="462" y="197" width="150" height="16" fill="url(#gBand)"/>
+            <rect x="462" y="194" width="150" height="2" fill="#D8AD5C"/>
+            <rect x="462" y="214" width="150" height="2" fill="#D8AD5C"/>
+            <rect class="beacon" x="518" y="80" width="24" height="8" rx="3" fill="#F2A93B"/>
+            <path d="M606 112v22" stroke="#2A3438" stroke-width="3"/><rect x="608" y="108" width="7" height="26" rx="2" fill="#2A3438"/>
+            <rect x="604" y="220" width="10" height="11" rx="2" fill="#FFF4C8"/>
+            <rect x="596" y="236" width="22" height="14" rx="3" fill="#2A3438"/>
+            <rect x="486" y="240" width="40" height="5" rx="2" fill="#2A3438"/>
+
+            <!-- wheel arches -->
+            <g clip-path="url(#cArch)" fill="#141B1E">
+              <circle cx="180" cy="268" r="38"/><circle cx="252" cy="268" r="38"/><circle cx="546" cy="268" r="38"/>
+            </g>
+            </g><!-- /bob -->
+
+            <!-- wheels -->
+            <g transform="translate(180 268)"><g class="spin"><use href="#wheel"/></g></g>
+            <g transform="translate(252 268)"><g class="spin"><use href="#wheel"/></g></g>
+            <g transform="translate(546 268)"><g class="spin"><use href="#wheel"/></g></g>
+            </g><!-- /drive -->
+
+            <!-- suction hose into manhole -->
+            <ellipse class="manhole" cx="40" cy="301" rx="30" ry="6" fill="#0A1A1F" stroke="#5C6A6B" stroke-width="2"/>
+            <path class="hose-line" pathLength="1" d="M84 202C56 208 40 234 48 260c5 18-6 32-8 40" fill="none" stroke="#F4F7F6" stroke-width="10" stroke-linecap="round"/>
+            <path class="hose-rib" d="M84 202C56 208 40 234 48 260c5 18-6 32-8 40" fill="none" stroke="#B7C3C3" stroke-width="10" stroke-dasharray="1.5 3.5"/>
+          </svg>
+        </div>
+
+        <div class="plate">
+          <div><b>24/7</b><span class="en">Dispatch, Fridays &amp; holidays included</span><span class="ar">خدمة متواصلة حتى الجمعة والعطل</span></div>
+          <div><b class="ltr">5,000–12,000</b><span class="en">Gallon suction tankers</span><span class="ar">جالون سعة صهاريج الشفط</span></div>
+          <div><b class="en">All areas</b><b class="ar">كل المناطق</b><span class="en">Houses, buildings &amp; companies</span><span class="ar">منازل ومبانٍ وشركات</span></div>
+          <div><b class="en">Licensed</b><b class="ar">مرخّص</b><span class="en">Disposal at treatment plants</span><span class="ar">التخلص في محطات المعالجة</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="services">
+      <div class="wrap">
+        <div class="sec-head">
+          <p class="eyebrow"><span class="en">Our services</span><span class="ar">خدماتنا</span></p>
+          <h2><span class="en">What we pump, clean and clear</span><span class="ar">نشفط وننظّف ونفتح المسدود</span></h2>
+          <p><span class="en">One call covers everything below ground — from a family villa's septic tank to a hotel's pump station.</span><span class="ar">اتصال واحد يغطي كل ما تحت الأرض — من بيارة الفيلا إلى غرفة الضخ في الفندق.</span></p>
+        </div>
+        <div class="svc-grid">
+          <article class="svc">
+            <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-drop"/></svg></span>
+            <h3><span class="en">Sewage water suction</span><span class="ar">شفط مياه المجاري</span></h3>
+            <p><span class="en">Fast vacuum pumping of sewage water from tanks, pits and flooded areas.</span><span class="ar">شفط سريع لمياه المجاري من الخزانات والحفر والأماكن المغمورة.</span></p>
+          </article>
+          <article class="svc">
+            <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-tank"/></svg></span>
+            <h3><span class="en">Septic tank emptying</span><span class="ar">تفريغ البيارات</span></h3>
+            <p><span class="en">Complete emptying of septic tanks, with settled sludge removed from the bottom.</span><span class="ar">تفريغ كامل للبيارات مع إزالة الرواسب المتراكمة في القاع.</span></p>
+          </article>
+          <article class="svc">
+            <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-grease"/></svg></span>
+            <h3><span class="en">Grease trap cleaning</span><span class="ar">تنظيف مصائد الشحوم</span></h3>
+            <p><span class="en">Scheduled cleaning for restaurants, hotels and bakeries — drains keep flowing, inspections pass.</span><span class="ar">تنظيف دوري للمطاعم والفنادق والمخابز لضمان جريان التصريف واجتياز التفتيش.</span></p>
+          </article>
+          <article class="svc">
+            <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-manhole"/></svg></span>
+            <h3><span class="en">Manhole &amp; drain unblocking</span><span class="ar">فتح غرف التفتيش والمجاري</span></h3>
+            <p><span class="en">High-pressure water jetting to clear blocked manholes, drain lines and chokes.</span><span class="ar">تسليك بضغط الماء العالي لفتح غرف التفتيش وخطوط الصرف المسدودة.</span></p>
+          </article>
+          <article class="svc">
+            <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-pump"/></svg></span>
+            <h3><span class="en">Sump pit &amp; pump station cleaning</span><span class="ar">تنظيف غرف الضخ ومحطات الرفع</span></h3>
+            <p><span class="en">Desilting of sump pits, lifting stations and wet wells for buildings and compounds.</span><span class="ar">إزالة الرواسب من غرف الضخ ومحطات الرفع للمباني والمجمعات.</span></p>
+          </article>
+          <article class="svc">
+            <span class="ico"><svg class="i" aria-hidden="true"><use href="#i-alert"/></svg></span>
+            <h3><span class="en">Emergency overflow response</span><span class="ar">طوارئ فيضان الخزانات</span></h3>
+            <p><span class="en">Night, weekend and holiday call-outs when a tank overflows or sewage backs up.</span><span class="ar">استجابة ليلية وفي العطل عند فيضان الخزان أو ارتداد مياه الصرف.</span></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec fleet-bg" id="fleet">
+      <div class="wrap">
+        <div class="sec-head">
+          <p class="eyebrow"><span class="en">Our tankers</span><span class="ar">صهاريجنا</span></p>
+          <h2><span class="en">Choose the right tanker size</span><span class="ar">اختر حجم الصهريج المناسب</span></h2>
+          <p><span class="en">Three sizes. Tell us your tank and we'll send the one that fits — you never pay for a bigger truck than the job needs.</span><span class="ar">ثلاثة أحجام. أخبرنا عن خزانك وسنرسل الصهريج المناسب — دون أن تدفع ثمن صهريج أكبر من حاجتك.</span></p>
+        </div>
+
+        <div class="fleet" role="table" aria-label="Tanker sizes">
+          <div class="fleet-row th" role="row">
+            <span role="columnheader"><span class="en">Tanker</span><span class="ar">الصهريج</span></span>
+            <span role="columnheader"><span class="en">Capacity, to scale</span><span class="ar">السعة بالمقياس</span></span>
+            <span role="columnheader"><span class="en">Litres</span><span class="ar">باللتر</span></span>
+            <span role="columnheader" class="best"><span class="en">Best for</span><span class="ar">مناسب لـ</span></span>
+          </div>
+          <div class="fleet-row" role="row">
+            <div class="gal ltr" role="cell">5,000<small>gallons</small></div>
+            <div class="bar" role="cell" aria-label="42% of largest tanker"><i style="width:41.7%"></i></div>
+            <div class="litre ltr" role="cell">≈ 22,730 L</div>
+            <div class="best" role="cell"><span class="en">Villas, houses and small septic tanks</span><span class="ar">الفلل والمنازل والبيارات الصغيرة</span></div>
+          </div>
+          <div class="fleet-row" role="row">
+            <div class="gal ltr" role="cell">8,000<small>gallons</small></div>
+            <div class="bar" role="cell" aria-label="67% of largest tanker"><i style="width:66.7%"></i></div>
+            <div class="litre ltr" role="cell">≈ 36,370 L</div>
+            <div class="best" role="cell"><span class="en">Apartment buildings, restaurants, schools</span><span class="ar">العمارات السكنية والمطاعم والمدارس</span></div>
+          </div>
+          <div class="fleet-row" role="row">
+            <div class="gal ltr" role="cell">12,000<small>gallons</small></div>
+            <div class="bar" role="cell" aria-label="100% — largest tanker"><i style="width:100%"></i></div>
+            <div class="litre ltr" role="cell">≈ 54,550 L</div>
+            <div class="best" role="cell"><span class="en">Hotels, compounds, factories, construction sites</span><span class="ar">الفنادق والمجمعات والمصانع ومواقع البناء</span></div>
+          </div>
+        </div>
+        <p class="fleet-note"><span class="en">Capacities in imperial gallons (1 gal = 4.546 L).</span><span class="ar">السعات بالجالون الإمبراطوري (1 جالون = 4.546 لتر).</span></p>
+      </div>
+    </section>
+
+    <section class="sec" id="process">
+      <div class="wrap">
+        <div class="sec-head">
+          <p class="eyebrow"><span class="en">How it works</span><span class="ar">طريقة العمل</span></p>
+          <h2><span class="en">From your call to a clean site</span><span class="ar">من اتصالك حتى موقع نظيف</span></h2>
+        </div>
+        <ol class="steps">
+          <li>
+            <span class="num">1</span>
+            <h3><span class="en">Call or WhatsApp</span><span class="ar">اتصل أو راسلنا</span></h3>
+            <p><span class="en">Tell us your area, the tank type, and when it was last emptied.</span><span class="ar">أخبرنا بالمنطقة ونوع الخزان وآخر مرة تم تفريغه.</span></p>
+          </li>
+          <li>
+            <span class="num">2</span>
+            <h3><span class="en">Price &amp; time confirmed</span><span class="ar">تأكيد السعر والموعد</span></h3>
+            <p><span class="en">You get a fixed price and an arrival time before the tanker leaves.</span><span class="ar">نؤكد لك السعر والموعد قبل انطلاق الصهريج.</span></p>
+          </li>
+          <li>
+            <span class="num">3</span>
+            <h3><span class="en">Suction on site</span><span class="ar">الشفط في الموقع</span></h3>
+            <p><span class="en">The crew lays the hose, pumps the tank dry and lifts out bottom sludge.</span><span class="ar">يمدّ الفريق الخرطوم ويفرّغ الخزان بالكامل مع إزالة رواسب القاع.</span></p>
+          </li>
+          <li>
+            <span class="num">4</span>
+            <h3><span class="en">Rinsed &amp; disposed</span><span class="ar">غسل الموقع والتخلص الآمن</span></h3>
+            <p><span class="en">The area is washed down and the load goes to a licensed treatment plant.</span><span class="ar">نغسل المكان وننقل الحمولة إلى محطة معالجة مرخّصة.</span></p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec fleet-bg" id="clients">
+      <div class="wrap two">
+        <div>
+          <p class="eyebrow"><span class="en">Who calls us</span><span class="ar">من نخدم</span></p>
+          <h2 class="sub-h"><span class="en">Homes, kitchens and whole compounds</span><span class="ar">منازل ومطابخ ومجمعات كاملة</span></h2>
+          <ul class="chips">
+            <li><span class="en">Villas &amp; houses</span><span class="ar">الفلل والمنازل</span></li>
+            <li><span class="en">Residential buildings</span><span class="ar">العمارات السكنية</span></li>
+            <li><span class="en">Restaurants &amp; bakeries</span><span class="ar">المطاعم والمخابز</span></li>
+            <li><span class="en">Hotels &amp; compounds</span><span class="ar">الفنادق والمجمعات</span></li>
+            <li><span class="en">Hospitals &amp; clinics</span><span class="ar">المستشفيات والعيادات</span></li>
+            <li><span class="en">Malls &amp; offices</span><span class="ar">المولات والمكاتب</span></li>
+            <li><span class="en">Factories &amp; workshops</span><span class="ar">المصانع والورش</span></li>
+            <li><span class="en">Construction sites</span><span class="ar">مواقع البناء</span></li>
+            <li><span class="en">Mosques &amp; schools</span><span class="ar">المساجد والمدارس</span></li>
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow"><span class="en">Why choose us</span><span class="ar">لماذا نحن</span></p>
+          <h2 class="sub-h"><span class="en">A dirty job, done properly</span><span class="ar">عمل صعب، ننجزه كما يجب</span></h2>
+          <ul class="why">
+            <li>
+              <svg class="i" aria-hidden="true"><use href="#i-check"/></svg>
+              <div><h3><span class="en">Sealed hoses, no smell left behind</span><span class="ar">خراطيم محكمة بلا روائح</span></h3>
+              <p><span class="en">Tight couplings and a closed tank keep odour and spillage off your property.</span><span class="ar">وصلات محكمة وخزان مغلق يمنعان الروائح والتسرب في موقعك.</span></p></div>
+            </li>
+            <li>
+              <svg class="i" aria-hidden="true"><use href="#i-check"/></svg>
+              <div><h3><span class="en">Price agreed up front</span><span class="ar">سعر واضح مسبقاً</span></h3>
+              <p><span class="en">The price we quote on the phone is the price you pay.</span><span class="ar">السعر الذي نتفق عليه بالهاتف هو ما تدفعه.</span></p></div>
+            </li>
+            <li>
+              <svg class="i" aria-hidden="true"><use href="#i-check"/></svg>
+              <div><h3><span class="en">Legal disposal, every load</span><span class="ar">تخلص نظامي لكل حمولة</span></h3>
+              <p><span class="en">Waste goes to an approved treatment plant — never dumped in wadis or open land.</span><span class="ar">المخلفات تذهب إلى محطة معالجة معتمدة — لا رمي في الأودية أو الأراضي المكشوفة.</span></p></div>
+            </li>
+            <li>
+              <svg class="i" aria-hidden="true"><use href="#i-check"/></svg>
+              <div><h3><span class="en">Nights and holidays</span><span class="ar">ليلاً وفي العطل</span></h3>
+              <p><span class="en">An overflow doesn't wait for office hours, and neither do we.</span><span class="ar">فيضان الخزان لا ينتظر أوقات الدوام، ونحن كذلك.</span></p></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="faq">
+      <div class="wrap">
+        <div class="sec-head">
+          <p class="eyebrow"><span class="en">FAQ</span><span class="ar">الأسئلة الشائعة</span></p>
+          <h2><span class="en">Questions people ask before booking</span><span class="ar">أسئلة قبل الحجز</span></h2>
+        </div>
+        <div class="faq">
+          <details open>
+            <summary><span class="en">How often should a septic tank be emptied?</span><span class="ar">كم مرة يجب تفريغ البيارة؟</span></summary>
+            <p><span class="en">For a family house, usually every 6–12 months. Signs it's due: slow drains, a smell near the cover, or water pooling around the tank.</span><span class="ar">للمنزل العائلي عادةً كل 6 إلى 12 شهراً. من علامات الامتلاء: بطء التصريف، أو رائحة قرب الغطاء، أو تجمّع المياه حول الخزان.</span></p>
+          </details>
+          <details>
+            <summary><span class="en">Do you come at night or on Fridays?</span><span class="ar">هل تأتون ليلاً أو يوم الجمعة؟</span></summary>
+            <p><span class="en">Yes. The line is answered 24 hours a day, including weekends and public holidays.</span><span class="ar">نعم، نرد على الاتصالات على مدار 24 ساعة بما في ذلك العطل الأسبوعية والرسمية.</span></p>
+          </details>
+          <details>
+            <summary><span class="en">Which tanker size do I need?</span><span class="ar">ما حجم الصهريج المناسب لي؟</span></summary>
+            <p><span class="en">Most houses need 5,000 gallons; buildings and restaurants usually 8,000; hotels and compounds 12,000. Tell us the tank size if you know it and we'll match it.</span><span class="ar">معظم المنازل تحتاج 5,000 جالون، والعمارات والمطاعم غالباً 8,000، والفنادق والمجمعات 12,000. أخبرنا بحجم خزانك إن كنت تعرفه وسنختار المناسب.</span></p>
+          </details>
+          <details>
+            <summary><span class="en">Where does the waste go?</span><span class="ar">أين تذهب المخلفات؟</span></summary>
+            <p><span class="en">To a licensed wastewater treatment plant. We never discharge into drains, wadis or open land.</span><span class="ar">إلى محطة معالجة مياه صرف مرخّصة، ولا نفرغها أبداً في المجاري أو الأودية أو الأراضي المكشوفة.</span></p>
+          </details>
+          <details>
+            <summary><span class="en">Can I book regular cleaning?</span><span class="ar">هل يمكن حجز تنظيف دوري؟</span></summary>
+            <p><span class="en">Yes — restaurants and buildings can set a monthly or quarterly schedule, and we'll remind you before each visit.</span><span class="ar">نعم، يمكن للمطاعم والمباني تحديد جدول شهري أو ربع سنوي، وسنذكّرك قبل كل زيارة.</span></p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec contact" id="contact">
+      <div class="wrap">
+        <div class="sec-head">
+          <p class="eyebrow"><span class="en">Book a tanker</span><span class="ar">احجز صهريجاً</span></p>
+          <h2><span class="en">Tank full? Call now — we answer 24 hours.</span><span class="ar">الخزان ممتلئ؟ اتصل الآن — نرد على مدار الساعة.</span></h2>
+        </div>
+        <div class="contact-grid">
+          <div class="lines">
+            <a data-tel href="tel:+96876368205">
+              <svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>
+              <span><small><span class="en">24-hour phone line</span><span class="ar">هاتف على مدار الساعة</span></small><strong class="big ltr" data-phone>+968 7636 8205</strong></span>
+            </a>
+            <a data-wa href="https://wa.me/96878061190" target="_blank" rel="noopener">
+              <svg class="i" aria-hidden="true"><use href="#i-wa"/></svg>
+              <span><small>WhatsApp · <span class="ltr" data-wa-text>+968 7806 1190</span></small><strong><span class="en">Send a message or location</span><span class="ar">أرسل رسالة أو موقعك</span></strong></span>
+            </a>
+            <a data-email href="mailto:info@example.com">
+              <svg class="i" aria-hidden="true"><use href="#i-mail"/></svg>
+              <span><small><span class="en">Email</span><span class="ar">البريد الإلكتروني</span></small><strong class="ltr" data-email-text>info@example.com</strong></span>
+            </a>
+            <div>
+              <svg class="i" aria-hidden="true"><use href="#i-pin"/></svg>
+              <span><small><span class="en">Service area</span><span class="ar">منطقة الخدمة</span></small><strong><span class="en">City, outskirts &amp; industrial areas</span><span class="ar">المدينة والضواحي والمناطق الصناعية</span></strong></span>
+            </div>
+          </div>
+
+          <form class="form" id="quote" novalidate>
+            <h3><span class="en">Request a quote</span><span class="ar">اطلب عرض سعر</span></h3>
+            <div class="field">
+              <label for="q-name"><span class="en">Your name</span><span class="ar">الاسم</span></label>
+              <input id="q-name" name="name" required autocomplete="name" data-ph-en="e.g. Ahmed Al-Balushi" data-ph-ar="مثال: أحمد البلوشي" placeholder="e.g. Ahmed Al-Balushi">
+            </div>
+            <div class="field">
+              <label for="q-phone"><span class="en">Phone</span><span class="ar">رقم الهاتف</span></label>
+              <input id="q-phone" name="phone" type="tel" required autocomplete="tel" dir="ltr" placeholder="+968 …" data-ph-en="+968 …" data-ph-ar="+968 …">
+            </div>
+            <div class="field">
+              <label for="q-service"><span class="en">Service</span><span class="ar">الخدمة</span></label>
+              <select id="q-service" name="service">
+                <option data-en="Septic tank emptying" data-ar="تفريغ البيارة">Septic tank emptying</option>
+                <option data-en="Sewage water suction" data-ar="شفط مياه المجاري">Sewage water suction</option>
+                <option data-en="Grease trap cleaning" data-ar="تنظيف مصيدة الشحوم">Grease trap cleaning</option>
+                <option data-en="Manhole / drain blockage" data-ar="انسداد غرفة تفتيش / مجرى">Manhole / drain blockage</option>
+                <option data-en="Sump pit / pump station" data-ar="غرفة ضخ / محطة رفع">Sump pit / pump station</option>
+                <option data-en="Emergency overflow" data-ar="طوارئ فيضان">Emergency overflow</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="q-size"><span class="en">Tanker size</span><span class="ar">حجم الصهريج</span></label>
+              <select id="q-size" name="size">
+                <option data-en="Not sure — advise me" data-ar="غير متأكد — انصحوني">Not sure — advise me</option>
+                <option data-en="5,000 gallons" data-ar="5,000 جالون">5,000 gallons</option>
+                <option data-en="8,000 gallons" data-ar="8,000 جالون">8,000 gallons</option>
+                <option data-en="12,000 gallons" data-ar="12,000 جالون">12,000 gallons</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label for="q-area"><span class="en">Area / location</span><span class="ar">المنطقة / الموقع</span></label>
+              <input id="q-area" name="area" data-ph-en="Area, street or landmark" data-ph-ar="المنطقة أو الشارع أو أقرب معلم" placeholder="Area, street or landmark">
+            </div>
+            <div class="field full">
+              <label for="q-notes"><span class="en">Details (optional)</span><span class="ar">تفاصيل إضافية (اختياري)</span></label>
+              <textarea id="q-notes" name="notes" data-ph-en="e.g. tank overflowing since this morning, villa, last emptied a year ago" data-ph-ar="مثال: الخزان يفيض منذ الصباح، فيلا، آخر تفريغ قبل سنة" placeholder="e.g. tank overflowing since this morning, villa, last emptied a year ago"></textarea>
+            </div>
+            <button class="btn" type="submit">
+              <svg class="i" aria-hidden="true"><use href="#i-wa"/></svg>
+              <span class="en">Send on WhatsApp</span><span class="ar">أرسل عبر واتساب</span>
+            </button>
+            <p class="form-note"><span class="en">Opens WhatsApp with your details already written.</span><span class="ar">يفتح واتساب ببياناتك مكتوبة وجاهزة للإرسال.</span></p>
+            <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <a class="brand" href="#top">
+        <svg aria-hidden="true"><use href="#logo"/></svg>
+        <span class="brand-txt">
+          <span class="brand-en">Sewerage Water Tank</span>
+          <span class="brand-ar" lang="ar" dir="rtl">الشفط میاں مجاری</span>
+        </span>
+      </a>
+      <p>© <span id="yr">2026</span> Sewerage Water Tank. <span class="en">All rights reserved.</span><span class="ar">جميع الحقوق محفوظة.</span></p>
+    </div>
+  </footer>
+
+  <nav class="mbar" aria-label="Quick contact">
+    <a data-tel href="tel:+96876368205"><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg><span class="en">Call</span><span class="ar">اتصال</span></a>
+    <a data-wa href="https://wa.me/96878061190" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
+  </nav>
+</div>
+
+<script>
+/* ===== Edit your business details here ===== */
+const CONFIG = {
+  phoneDisplay: "+968 7636 8205",  // number as shown on the site
+  phoneIntl:    "96876368205",     // digits only, with country code (used for phone calls)
+  whatsappDisplay: "+968 7806 1190", // WhatsApp number as shown on the site
+  whatsappIntl: "96878061190",     // digits only, with country code (used for WhatsApp)
+  email:        "info@example.com"
+};
+/* =========================================== */
+
+(function () {
+  const site = document.getElementById("site");
+
+  document.querySelectorAll("[data-tel]").forEach(a => a.href = "tel:+" + CONFIG.phoneIntl);
+  document.querySelectorAll("[data-wa]").forEach(a => a.href = "https://wa.me/" + CONFIG.whatsappIntl);
+  document.querySelectorAll("[data-wa-text]").forEach(el => el.textContent = CONFIG.whatsappDisplay);
+  document.querySelectorAll("[data-phone]").forEach(el => el.textContent = CONFIG.phoneDisplay);
+  document.querySelectorAll("[data-email]").forEach(a => a.href = "mailto:" + CONFIG.email);
+  document.querySelectorAll("[data-email-text]").forEach(el => el.textContent = CONFIG.email);
+  document.getElementById("yr").textContent = new Date().getFullYear();
+
+  function setLang(lang) {
+    site.dataset.lang = lang;
+    site.dir = lang === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-en][data-ar]").forEach(el => el.textContent = el.dataset[lang]);
+    document.querySelectorAll("[data-ph-en]").forEach(el => el.placeholder = lang === "ar" ? el.dataset.phAr : el.dataset.phEn);
+    try { localStorage.setItem("swt-lang", lang); } catch (e) {}
+  }
+  let saved = null;
+  try { saved = localStorage.getItem("swt-lang"); } catch (e) {}
+  if (saved === "ar") setLang("ar");
+
+  document.getElementById("langBtn").addEventListener("click", () =>
+    setLang(site.dataset.lang === "ar" ? "en" : "ar"));
+
+  /* ===== Motion ===== */
+  window.__rv = true;
+  const header = document.querySelector(".head");
+  const onScroll = () => header.classList.toggle("scrolled", window.scrollY > 8);
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  if (document.documentElement.classList.contains("motion")) {
+    const setDelay = (el, ms) => { el.style.setProperty("--d", ms + "ms"); el._d = ms; };
+    const reveal = (sel, variant, delay = 0) => document.querySelectorAll(sel).forEach(el => {
+      el.classList.add("rv");
+      if (variant) el.dataset.rv = variant;
+      setDelay(el, delay);
+    });
+    const stagger = (sel, variant, step, base = 0) => document.querySelectorAll(sel).forEach((el, i) => {
+      el.classList.add("rv");
+      if (variant) el.dataset.rv = variant;
+      setDelay(el, base + Math.min(i, 8) * step);
+    });
+    // Wrap each word in a span so headings can rise word by word (counter restarts for each language span)
+    const words = (sel, delay = 0) => document.querySelectorAll(sel).forEach(el => {
+      el.dataset.words = "";
+      setDelay(el, delay);
+      let i = 0;
+      (function walk(node) {
+        [...node.childNodes].forEach(n => {
+          if (n.nodeType === 1) { if (n.matches(".en, .ar")) i = 0; walk(n); return; }
+          if (n.nodeType !== 3 || !n.textContent.trim()) return;
+          const frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(part => {
+            if (!part) return;
+            if (!part.trim()) { frag.append(part); return; }
+            const w = document.createElement("span");
+            w.className = "w";
+            w.textContent = part;
+            w.style.setProperty("--i", i++);
+            frag.append(w);
+          });
+          n.replaceWith(frag);
+        });
+      })(el);
+    });
+
+    reveal(".hero .eyebrow");
+    words(".hero h1 .calli", 120);
+    words(".hero h1 .name-en", 520);
+    reveal(".hero .lede", null, 700);
+    reveal(".hero-cta", null, 850);
+    stagger(".plate > div", null, 110, 1000);
+
+    reveal(".sec-head .eyebrow, #clients .eyebrow");
+    words(".sec-head h2, .sub-h", 80);
+    reveal(".sec-head > p:not(.eyebrow)", null, 320);
+    stagger(".svc-grid > .svc", null, 90);
+    stagger(".fleet-row", null, 120);
+    reveal(".fleet-note", null, 200);
+    document.querySelector(".steps").dataset.io = "";
+    stagger(".steps > li", null, 160, 200);
+    stagger(".chips > li", "zoom", 45);
+    stagger(".why > li", "start", 100);
+    stagger(".faq details", null, 70);
+    stagger(".lines > *", "start", 90);
+    reveal(".form", "zoom", 150);
+
+    // Count numbers up from zero when they come into view
+    document.querySelectorAll(".plate b.ltr, .gal").forEach(el => el.dataset.count = "");
+    const countUp = el => {
+      const node = [...el.childNodes].find(n => n.nodeType === 3 && /\d/.test(n.textContent));
+      if (!node) return;
+      const tpl = node.textContent;
+      const nums = tpl.match(/\d[\d,]*/g).map(s => +s.replace(/,/g, ""));
+      const t0 = performance.now(), dur = 1400;
+      (function tick(now) {
+        const p = Math.min((now - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+        let k = 0;
+        node.textContent = tpl.replace(/\d[\d,]*/g, () => Math.round(nums[k++] * e).toLocaleString("en-US"));
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+    };
+
+    const show = el => {
+      el.classList.add("in");
+      const d = el._d || 0;
+      el.querySelectorAll("[data-count]").forEach(c => setTimeout(() => countUp(c), d));
+      // Once revealed, drop the reveal transition so the element's own hover transitions take over
+      setTimeout(() => el.classList.add("done"), d + 1000);
+    };
+    const io = new IntersectionObserver(entries => entries.forEach(({ isIntersecting, target }) => {
+      if (isIntersecting) { io.unobserve(target); show(target); }
+    }), { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+    // The hero is the first view, so it plays on load (after one painted frame); the rest waits until scrolled into view
+    document.querySelectorAll(".rv, [data-words], [data-io]").forEach(el =>
+      el.closest(".hero") ? requestAnimationFrame(() => requestAnimationFrame(() => show(el))) : io.observe(el));
+  }
+
+  const form = document.getElementById("quote");
+  const status = document.getElementById("formStatus");
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const ar = site.dataset.lang === "ar";
+    const v = id => document.getElementById(id).value.trim();
+    const name = v("q-name"), phone = v("q-phone");
+    if (!name || !phone) {
+      status.textContent = ar ? "يرجى كتابة الاسم ورقم الهاتف لنتمكن من التواصل معك."
+                              : "Add your name and phone number so we can call you back.";
+      (!name ? document.getElementById("q-name") : document.getElementById("q-phone")).focus();
+      return;
+    }
+    const sel = id => { const s = document.getElementById(id); return s.options[s.selectedIndex].text; };
+    const msg = [
+      ar ? "طلب صهريج شفط" : "Tanker request",
+      (ar ? "الاسم: " : "Name: ") + name,
+      (ar ? "الهاتف: " : "Phone: ") + phone,
+      (ar ? "الخدمة: " : "Service: ") + sel("q-service"),
+      (ar ? "الحجم: " : "Tanker: ") + sel("q-size"),
+      (ar ? "الموقع: " : "Location: ") + (v("q-area") || "-"),
+      v("q-notes") ? (ar ? "تفاصيل: " : "Details: ") + v("q-notes") : ""
+    ].filter(Boolean).join("\n");
+    const url = "https://wa.me/" + CONFIG.whatsappIntl + "?text=" + encodeURIComponent(msg);
+    window.open(url, "_blank", "noopener");
+    status.innerHTML = "";
+    status.append(ar ? "تم تجهيز رسالتك في واتساب. إن لم تفتح، " : "Your message is ready in WhatsApp. If it didn't open, ");
+    const link = document.createElement("a");
+    link.href = url; link.target = "_blank"; link.rel = "noopener";
+    link.textContent = ar ? "اضغط هنا" : "tap here";
+    status.append(link, ".");
+  });
+})();
+</script>
+</body>
+</html>

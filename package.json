@@ -1,0 +1,10 @@
+{
+  "name": "sewerage-water-tank",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sewerage Water Tank — الشفط میاں مجاری website",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  }
+}
