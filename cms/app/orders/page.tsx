@@ -68,7 +68,9 @@ const paymentLabel: Record<PaymentStatus, string> = {
 
 const statusLabel: Record<Status, string> = {
   confirmed: "Confirmed",
-  pending: "Awaiting payment",
+  // Not "Awaiting payment": payment is its own badge now, and a booking can
+  // have its deposit paid while an operator has still to confirm the dates.
+  pending: "Not confirmed",
   cancelled: "Cancelled",
 };
 
