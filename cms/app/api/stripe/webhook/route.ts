@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
 import type Stripe from "stripe";
-import { getDb } from "@/lib/mongodb";
 import { verifyWebhook } from "@/lib/stripe";
-import { publish } from "@/lib/realtime";
-import { formatUsd } from "@/lib/payments";
+import { recordPaidSession } from "@/lib/recordPayment";
 
 /**
  * Stripe's callback: the only thing that marks a booking paid.
@@ -41,56 +38,16 @@ export async function POST(request: Request) {
 
   const session = event.data.object as Stripe.Checkout.Session;
 
-  // completed fires for unpaid sessions too (bank transfers awaiting funds).
-  if (session.payment_status !== "paid") {
-    return NextResponse.json({ received: true, ignored: session.payment_status });
-  }
-
-  const bookingId = session.metadata?.bookingId;
-
-  if (!bookingId || !ObjectId.isValid(bookingId)) {
-    // Nothing to attach it to. 200 on purpose: retrying will not help.
-    console.warn("[stripe] paid session with no usable bookingId", session.id);
-    return NextResponse.json({ received: true, ignored: "no bookingId" });
-  }
-
   try {
-    const db = await getDb();
+    // Shared with the return page — see lib/recordPayment.ts. It ignores
+    // sessions Stripe has not marked paid (a bank transfer awaiting funds) and
+    // bookings already recorded, which is what makes Stripe's retries harmless.
+    const recorded = await recordPaidSession(session);
 
-    const booking = await db.collection("bookings").findOneAndUpdate(
-      { _id: new ObjectId(bookingId), "payment.status": { $ne: "paid" } },
-      {
-        $set: {
-          payment: {
-            status: "paid",
-            provider: "stripe",
-            sessionId: session.id,
-            paymentIntentId:
-              typeof session.payment_intent === "string" ? session.payment_intent : null,
-            amountUsdCents: session.amount_total ?? 0,
-            currency: session.currency ?? "usd",
-            paidAt: new Date(),
-            updatedAt: new Date(),
-          },
-        },
-      },
-      { returnDocument: "after" }
-    );
-
-    // Already paid, or already deleted: a retry of an event we handled.
-    if (!booking) {
-      return NextResponse.json({ received: true, ignored: "already paid" });
-    }
-
-    await publish({
-      type: "booking.paid",
-      ref: String(booking.ref ?? "—"),
-      trip: String(booking.trip ?? "Trip"),
-      name: String(booking.name ?? "Someone"),
-      amount: formatUsd(session.amount_total ?? 0),
+    return NextResponse.json({
+      received: true,
+      ...(recorded ? {} : { ignored: session.payment_status }),
     });
-
-    return NextResponse.json({ received: true });
   } catch (error) {
     console.error(error);
 

@@ -2,19 +2,21 @@ import Link from "next/link";
 import s from "../../components/ui/ui.module.css";
 import { getStripe } from "@/lib/stripe";
 import { formatUsd } from "@/lib/payments";
+import { recordPaidSession } from "@/lib/recordPayment";
 import { requireUser } from "@/lib/session";
 
 /**
  * Where Stripe returns the traveller after a successful payment.
  *
- * This screen only *reports*. What marks the booking paid is the webhook — see
- * app/api/stripe/webhook/route.ts — because anyone can type this URL, and a
- * traveller who closes the tab at the wrong moment never reaches it at all.
+ * The session id in the URL is not believed on its own: the session is fetched
+ * from Stripe, and only Stripe's own "paid" counts. With that in hand this
+ * records the payment, through the same function the webhook uses.
  *
- * So the session is read back from Stripe rather than trusted from the query
- * string: the id in the URL is only useful to someone who just paid, and asking
- * Stripe is what turns it into a fact. If the webhook has not landed yet, the
- * booking simply shows as paid here a moment before /orders catches up.
+ * Both paths exist because each covers the other's gap. The webhook is the
+ * dependable one — it arrives even if the traveller closes the tab — but it
+ * needs a signing secret, which a local machine lacks until someone runs the
+ * Stripe CLI. This page needs no secret but needs the traveller to come back.
+ * Whichever happens first does the write; the second finds it done.
  */
 export const dynamic = "force-dynamic";
 
@@ -35,6 +37,9 @@ export default async function PaidPage(props: PageProps<"/bookings/paid">) {
       amount = formatUsd(session.amount_total ?? 0);
       ref = String(session.metadata?.ref ?? "");
       trip = String(session.metadata?.trip ?? "");
+
+      // Writes it onto the booking unless the webhook has already done so.
+      if (paid) await recordPaidSession(session);
     } catch (error) {
       // An unknown id, or Stripe unreachable. Nothing here changes the
       // booking, so the honest thing is to say we could not confirm it.
