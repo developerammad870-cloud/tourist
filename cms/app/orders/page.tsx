@@ -5,6 +5,7 @@ import OrderCorner from "../components/OrderCorner";
 import live from "../components/live.module.css";
 import { getDb } from "@/lib/mongodb";
 import { requireAdmin } from "@/lib/session";
+import { formatUsd, type PaymentStatus } from "@/lib/payments";
 
 /**
  * Orders screen, backed by the `bookings` collection in MongoDB.
@@ -41,12 +42,28 @@ type Order = {
   notes: string;
   total: number;
   status: Status;
+  /** How the deposit stands. Bookings made before payments existed are unpaid. */
+  payment: PaymentStatus;
+  /** What Stripe actually took, in US cents. Zero until it is paid. */
+  paidCents: number;
 };
 
 const statusClass: Record<Status, string> = {
   confirmed: s.badgeOk,
   pending: s.badgeWait,
   cancelled: s.badgeOff,
+};
+
+const paymentClass: Record<PaymentStatus, string> = {
+  paid: s.badgeOk,
+  pending: s.badgeWait,
+  unpaid: s.badgeOff,
+};
+
+const paymentLabel: Record<PaymentStatus, string> = {
+  paid: "Deposit paid",
+  pending: "Payment started",
+  unpaid: "No deposit",
 };
 
 const statusLabel: Record<Status, string> = {
@@ -87,6 +104,8 @@ async function getOrders(): Promise<Order[]> {
     notes: d.notes ?? "",
     total: d.total ?? 0,
     status: (d.status ?? "pending") as Status,
+    payment: (d.payment?.status ?? "unpaid") as PaymentStatus,
+    paidCents: d.payment?.status === "paid" ? (d.payment.amountUsdCents ?? 0) : 0,
   }));
 }
 
@@ -141,6 +160,14 @@ export default async function Orders() {
                 <div className={live.headEnd}>
                   <span className={`${s.badge} ${statusClass[o.status]}`}>
                     {statusLabel[o.status]}
+                  </span>
+                  {/* Separate from the status above on purpose: a deposit can
+                      be paid on a booking nobody has confirmed yet, and an
+                      operator needs to see both facts at once. */}
+                  <span className={`${s.badge} ${paymentClass[o.payment]}`}>
+                    {o.payment === "paid"
+                      ? `Deposit ${formatUsd(o.paidCents)}`
+                      : paymentLabel[o.payment]}
                   </span>
                   {/* Appears once the booking is confirmed or cancelled:
                       removes the record for good. */}

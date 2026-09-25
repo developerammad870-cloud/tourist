@@ -79,7 +79,9 @@ export async function POST(request: Request) {
       // bookings — otherwise a booking made here wouldn't show up there.
       email: String(email).trim().toLowerCase(),
       phone: phone ?? "",
-      userId: null,
+      // Whoever is signed in owns this booking, which is what /api/checkout
+      // checks before letting someone pay against it.
+      userId: guard.user.id,
       destinationId: trip.id,
       trip: trip.name,
       region: trip.region,

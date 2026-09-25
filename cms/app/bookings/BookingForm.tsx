@@ -3,6 +3,16 @@
 import { useState } from "react";
 import s from "../components/ui/ui.module.css";
 import { destinations } from "../components/home/destinations";
+import {
+  DEPOSIT_RATE,
+  depositUsdCents,
+  formatPkr,
+  formatUsd,
+  totalPkr,
+} from "@/lib/payments";
+
+/** 20, as a whole number, for the wording on this screen. */
+const DEPOSIT_PERCENT = Math.round(DEPOSIT_RATE * 100);
 
 /**
  * Booking request form. Posts to /api/bookings, which writes to the
@@ -13,7 +23,14 @@ import { destinations } from "../components/home/destinations";
  * so the two can't drift apart. The price is NOT sent from here: the API
  * resolves it from the destination id server-side.
  */
-export default function BookingForm({ preselect }: { preselect: string }) {
+export default function BookingForm({
+  preselect,
+  cancelledRef = "",
+}: {
+  preselect: string;
+  /** Booking reference the traveller backed out of paying, from Stripe's cancel URL. */
+  cancelledRef?: string;
+}) {
   const [busy, setBusy] = useState(false);
   const [ok, setOk] = useState(false);
   const [message, setMessage] = useState("");
@@ -25,6 +42,13 @@ export default function BookingForm({ preselect }: { preselect: string }) {
    * empty select after hydration.
    */
   const [tripId, setTripId] = useState(preselect);
+
+  // Controlled so the deposit line below can quote a real figure before anyone
+  // commits to paying it.
+  const [people, setPeople] = useState(2);
+
+  const trip = destinations.find((d) => d.id === tripId);
+  const total = trip ? totalPkr(trip.priceFrom, people) : 0;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -58,7 +82,34 @@ export default function BookingForm({ preselect }: { preselect: string }) {
       }
 
       setOk(true);
-      setMessage(`Booking saved. Your reference is ${data.ref}.`);
+      setMessage(`Booking ${data.ref} saved. Taking you to the payment page…`);
+
+      /*
+       * Straight on to Stripe for the deposit. The booking is already stored,
+       * so a failure here — no key configured, Stripe unreachable, the
+       * traveller closing the tab — costs the enquiry nothing: it sits unpaid
+       * on /orders and can be paid later.
+       */
+      const pay = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingId: data.bookingId }),
+      });
+
+      const payment = await pay.json();
+
+      if (pay.ok && payment.success && payment.url) {
+        // A full navigation, not router.push: Stripe Checkout is its own site.
+        window.location.href = payment.url;
+        return;
+      }
+
+      setMessage(
+        `Booking ${data.ref} saved, but the payment page could not be opened. ${
+          payment.message ?? ""
+        }`
+      );
+
       formEl.reset();
       // reset() clears the DOM, but the destination select is controlled by
       // React — without this it would keep showing the trip just booked while
@@ -78,12 +129,22 @@ export default function BookingForm({ preselect }: { preselect: string }) {
         <p className={s.eyebrow}>Reserve</p>
         <h1 className={s.title}>Book your travel</h1>
         <p className={s.lede}>
-          Tell us where and when. We&rsquo;ll confirm availability and hold your
-          place for 48 hours.
+          Tell us where and when. A {DEPOSIT_PERCENT}% deposit holds the place;
+          the rest is settled before departure.
         </p>
       </div>
 
       <div className={s.panel}>
+        {/* Stripe sends the traveller back here when they close the payment
+            page. The booking is saved either way, so this says where it went
+            rather than treating it as an error. */}
+        {cancelledRef && !message && (
+          <p className={`${s.notice} ${s.noticeBad}`} role="status">
+            Payment cancelled. Booking {cancelledRef} is saved and unpaid — an
+            admin can take the deposit from Orders.
+          </p>
+        )}
+
         <form className={s.form} onSubmit={handleSubmit}>
           <div className={s.row}>
             <div className={s.field}>
@@ -128,7 +189,9 @@ export default function BookingForm({ preselect }: { preselect: string }) {
             <div className={s.field}>
               <label className={s.label} htmlFor="b-people">Travellers</label>
               <input id="b-people" name="travellers" className={s.input} type="number"
-                min={1} max={20} defaultValue={2} required />
+                min={1} max={20} required
+                value={people}
+                onChange={(e) => setPeople(Number(e.target.value) || 1)} />
             </div>
             <div className={s.field}>
               <label className={s.label} htmlFor="b-phone">Phone</label>
@@ -143,9 +206,19 @@ export default function BookingForm({ preselect }: { preselect: string }) {
               placeholder="Dietary needs, accessibility, preferred pace…" />
           </div>
 
+          {/* What the card will actually be charged, worked out with the same
+              functions the server uses — see lib/payments.ts. */}
+          {trip && (
+            <p className={s.notice} role="status">
+              {trip.name} · {people} traveller{people === 1 ? "" : "s"} ·{" "}
+              {formatPkr(total)} total. Due now: {formatUsd(depositUsdCents(total))}{" "}
+              ({DEPOSIT_PERCENT}% deposit, charged in USD).
+            </p>
+          )}
+
           <div className={s.actions}>
             <button className={`${s.btn} ${s.btnPrimary}`} type="submit" disabled={busy}>
-              {busy ? "Saving…" : "Confirm booking"}
+              {busy ? "Saving…" : "Book and pay deposit"}
             </button>
           </div>
 

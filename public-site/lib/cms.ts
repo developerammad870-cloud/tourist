@@ -21,7 +21,10 @@
  */
 
 const PRODUCTION_CMS = "https://tourist-cms.vercel.app";
-const DEVELOPMENT_CMS = "http://localhost:3001";
+// Set by next.config.ts under `next dev` to this PC's Wi-Fi address, so the
+// buttons also work from another laptop on the same network.
+const DEVELOPMENT_CMS =
+  process.env.NEXT_PUBLIC_DEV_CMS_URL ?? "http://localhost:3001";
 
 const configured = process.env.NEXT_PUBLIC_CMS_URL?.trim();
 const usable =

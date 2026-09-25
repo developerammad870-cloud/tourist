@@ -66,25 +66,62 @@ Collapsible navy sidebar, no navbar. This is the original app.
 | --- | --- |
 | `/` | Home |
 | `/hotels` | Hotels |
-| `/bookings` | Booking form |
+| `/bookings` | Booking form, then Stripe Checkout for the deposit |
+| `/bookings/paid` | Where Stripe returns after payment |
 | `/places` | Places gallery |
 | `/orders` | Every booking in the database |
 | `/users` | Users — create, edit, set role, delete |
 | `/login`, `/signUp` | Account pages |
 
-### Security — read before deploying
+### Sign-in and roles
 
-**The CMS has no sign-in.** Every page and every API route in `cms/` is open to
-anyone who can reach port 3001. That matches the original app, and it is fine on
-localhost. It is *not* fine on a network or a public host.
+The CMS is closed: every page and API route needs a session except `/login`,
+`/signUp` and the Stripe webhook. A session is a JWT in an httpOnly `cms_session`
+cookie (12 hours), checked in three places — `proxy.ts` before a page renders,
+`guardApi()` inside each route handler, and a ticket check on the WebSocket
+upgrade. `lib/permissions.ts` holds the lists; `ADMIN_ONLY` covers `/orders`,
+`/users`, `/api/users`, `/api/test-db` and `/api/realtime`.
 
-If you want it locked down, the public site already has a working bcrypt +
-session implementation (`public-site/lib/auth.ts`, `lib/session.ts`,
-`proxy.ts`) that can be lifted across.
+Two roles. A **user** may book and pay for their own trips; an **admin** also
+sees Orders, Users and the live socket. Sign-up always creates a user — the role
+is never read from the request body. Promote with `npm run db:make-admin -- you@example.com`.
 
-The CMS does still **hash passwords** when creating users, because the public
-site authenticates against those same records — a plain-text password written
-here would simply fail to log in there.
+`AUTH_SECRET` (32+ characters) must be set wherever the CMS runs, including on
+the host. Without it, signing in throws.
+
+### Payments — Stripe deposits
+
+Booking and paying are one flow on `/bookings`: the booking is written to
+MongoDB first, then `/api/checkout` opens a Stripe Checkout session and the
+browser is sent to it. An abandoned payment therefore costs nothing — the
+enquiry is saved, marked unpaid, and shows that way on Orders.
+
+| Piece | |
+| --- | --- |
+| `lib/payments.ts` | The arithmetic: 20% deposit, PKR→USD at a fixed rate, Stripe's 50c floor |
+| `lib/stripe.ts` | Lazy Stripe client and webhook signature check |
+| `app/api/checkout/route.ts` | Creates the session. Amount comes from the stored booking, never the request |
+| `app/api/stripe/webhook/route.ts` | The only thing that marks a booking paid |
+| `app/bookings/paid/page.tsx` | Where Stripe returns the traveller; reports, decides nothing |
+
+The webhook is public because Stripe cannot sign in; its signature is what
+authenticates it. Retries are harmless — a second event for a paid booking is
+ignored rather than re-announced.
+
+Set up locally:
+
+```bash
+# 1. cms/.env.local
+STRIPE_SECRET_KEY=sk_test_...        # dashboard.stripe.com/test/apikeys
+STRIPE_WEBHOOK_SECRET=whsec_...      # printed by the listen command below
+
+# 2. forward Stripe's events to the dev server
+stripe listen --forward-to localhost:3001/api/stripe/webhook
+```
+
+Test card `4242 4242 4242 4242`, any future expiry and CVC. Live keys need the
+same two variables set on the host, and a webhook endpoint pointed at
+`https://<your-cms>/api/stripe/webhook`.
 
 ## Accounts
 

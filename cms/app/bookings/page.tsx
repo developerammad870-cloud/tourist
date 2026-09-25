@@ -16,12 +16,16 @@ import BookingForm from "./BookingForm";
  * `searchParams` is a Promise in Next 16; synchronous access was removed.
  */
 export default async function BookingsPage(props: PageProps<"/bookings">) {
-  const { trip } = await props.searchParams;
+  const { trip, payment, ref } = await props.searchParams;
 
   const preselect =
     typeof trip === "string" && destinations.some((d) => d.id === trip)
       ? trip
       : "";
 
-  return <BookingForm preselect={preselect} />;
+  // Stripe's cancel URL comes back as ?payment=cancelled&ref=RMA-2401.
+  const cancelledRef =
+    payment === "cancelled" && typeof ref === "string" ? ref : "";
+
+  return <BookingForm preselect={preselect} cancelledRef={cancelledRef} />;
 }

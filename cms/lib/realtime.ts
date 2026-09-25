@@ -23,6 +23,14 @@ export type RealtimeEvent =
       travellers: number;
       source: "public-site" | "cms";
     }
+  | {
+      type: "booking.paid";
+      ref: string;
+      trip: string;
+      name: string;
+      /** Already formatted, e.g. "$103.58" — the feed only displays it. */
+      amount: string;
+    }
   | { type: "message.created"; name: string; subject: string };
 
 export async function publish(event: RealtimeEvent): Promise<void> {

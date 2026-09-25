@@ -1,5 +1,15 @@
+import os from "node:os";
 import path from "node:path";
 import type { NextConfig } from "next";
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
+
+/** This computer's Wi-Fi / LAN IPv4 addresses, e.g. 192.168.0.114. */
+function lanAddresses(): string[] {
+  return Object.values(os.networkInterfaces())
+    .flat()
+    .filter((n): n is os.NetworkInterfaceInfo => !!n && n.family === "IPv4" && !n.internal)
+    .map((n) => n.address);
+}
 
 const nextConfig: NextConfig = {
   turbopack: {
@@ -43,4 +53,22 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+/*
+ * Same-Wi-Fi access in development.
+ *
+ * allowedDevOrigins lets another laptop open http://<this PC's IP>:3000 without
+ * Next blocking the dev assets. NEXT_PUBLIC_DEV_CMS_URL points the CMS buttons
+ * at this PC's IP instead of "localhost", which on the other laptop would mean
+ * that laptop. Both are set for `next dev` only, so Vercel builds are untouched.
+ */
+export default function config(phase: string): NextConfig {
+  if (phase !== PHASE_DEVELOPMENT_SERVER) return nextConfig;
+
+  const lan = lanAddresses();
+
+  return {
+    ...nextConfig,
+    allowedDevOrigins: lan,
+    env: lan[0] ? { NEXT_PUBLIC_DEV_CMS_URL: `http://${lan[0]}:3001` } : {},
+  };
+}

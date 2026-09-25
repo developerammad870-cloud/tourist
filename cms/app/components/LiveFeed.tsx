@@ -56,6 +56,13 @@ export default function LiveFeed() {
           push(`Removed · ${event.ref}`, `${event.name} — ${event.trip}`);
         }
 
+        if (event.type === "booking.paid") {
+          push(
+            `Deposit paid · ${event.ref}`,
+            `${event.name} — ${event.trip}, ${event.amount}`
+          );
+        }
+
         if (event.type === "message.created") {
           push("New message", `${event.name} — ${event.subject}`);
         }

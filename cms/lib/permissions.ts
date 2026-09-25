@@ -16,8 +16,20 @@ export type Role = "user" | "admin";
 /** Pages anyone can reach, signed in or not. Everything else needs a session. */
 export const PUBLIC_PAGES = ["/login", "/signUp"];
 
-/** API routes that must work before there is a session to check. */
-export const PUBLIC_API = ["/api/auth/login", "/api/auth/register", "/api/auth/logout"];
+/**
+ * API routes that must work before there is a session to check.
+ *
+ * The Stripe webhook is here because Stripe cannot sign in: it is a server
+ * somewhere calling in to report a payment. What authenticates it is the
+ * signature on the request, checked in lib/stripe.ts — see the note in
+ * app/api/stripe/webhook/route.ts.
+ */
+export const PUBLIC_API = [
+  "/api/auth/login",
+  "/api/auth/register",
+  "/api/auth/logout",
+  "/api/stripe/webhook",
+];
 
 /**
  * Admin-only, pages and API alike.

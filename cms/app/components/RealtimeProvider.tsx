@@ -30,6 +30,18 @@ import { usePathname, useRouter } from "next/navigation";
 
 const WS_URL = process.env.NEXT_PUBLIC_REALTIME_WS ?? "ws://localhost:3002/ws";
 
+/**
+ * WS_URL, but aimed at the computer this page was loaded from when it says
+ * "localhost" — on another laptop on the same Wi-Fi, localhost is that laptop.
+ */
+function socketUrl(): string {
+  const url = new URL(WS_URL);
+  if (url.hostname === "localhost" && window.location.hostname !== "localhost") {
+    url.hostname = window.location.hostname;
+  }
+  return url.toString();
+}
+
 /*
  * The only screens that open a socket.
  *
@@ -129,7 +141,7 @@ export default function RealtimeProvider({
       }
       if (closed) return;
 
-      const socket = new WebSocket(`${WS_URL}?ticket=${encodeURIComponent(ticket)}`);
+      const socket = new WebSocket(`${socketUrl()}?ticket=${encodeURIComponent(ticket)}`);
       socketRef.current = socket;
 
       socket.onopen = () => {
@@ -159,6 +171,7 @@ export default function RealtimeProvider({
           event.type === "booking.created" ||
           event.type === "booking.updated" ||
           event.type === "booking.deleted" ||
+          event.type === "booking.paid" ||
           event.type === "message.created"
         ) {
           router.refresh();
